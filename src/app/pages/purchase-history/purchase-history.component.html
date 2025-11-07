@@ -1,0 +1,205 @@
+<!-- src/app/pages/purchase-history/purchase-history.component.html -->
+
+                            <!-- sombreado -->
+<div class="container mt-5  shadow-sm p-3 mb-3 bg-body rounded">
+    <h2 class="mb-4 text-center">🧾 Historial de Compras</h2>    
+    <div class="text-center mt-4 p-3">
+        <button class=" btn btn-secondary" (click)="goBack()">Volver</button>
+    </div>
+    
+    <!-- sin compras -->        
+    <div *ngIf="receipts.length === 0" class="col-12">
+        <div class="alert alert-info text-center">
+            <p>No hay compras registradas.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        
+        <!-- columna izquierda -->
+        <div *ngIf="receipts.length > 0" class="col-md-6">
+            <div class="class-responsive">
+                                                                                                    <!-- sombreado -->
+                <table class="table table-sm table-bordered table-hover text-center align-middle    shadow p-3 mb-3 bg-body rounded">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th class="col-md-4">Fecha</th>
+                            <th class="col-md-4">Total</th>
+                            <th class="col-md-2">Cantidad</th>
+                            <th class="col-md-2">Detalles</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <tr *ngFor="let receipt of receipts" class="text-center">
+                            <td>{{ receipt.date | date: 'short' }}</td>
+                            <td>{{ receipt.totalAmount | currency }}</td>
+                            <td>{{ receipt.totalQuantity }}</td>
+                            <td class="text-center">
+                                <button
+                                    class="btn btn-sm btn-primary px-2"
+                                    (click)="viewDetails(receipt)">
+                                    Ver
+                                </button>
+                                <!-- Próximo paso: botón para PDF -->
+                                <!-- <button (click)="downloadPdf(receipt)">Descargar PDF</button> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div *ngIf="selectedReceipt" class="col-md-6">
+                                            <!-- sombreado -->
+            <div class="card-shadow mt-2    shadow-lg p-3 mb-3 bg-body rounded">
+                <div class="card-header d-flex justify-content-between align-items-center mb-3">
+                    <strong>📜 Detalles del recibo</strong>
+                    <button
+                        title="Imprimir"
+                        alt="Imprimir"
+                        class="btn btn-zoom"
+                        style="transition: transform 0.2s;"
+                        (click)="printCurrentReceipt()">🖨️</button>
+                    <button
+                        title="Guardar PDF"
+                        alt="Guardar PDF"
+                        class="btn btn-zoom">💾</button>
+                    <button
+                        title="Ver comprobante"
+                        alt="Ver comprobante"
+                        class="btn btn-zoom">🔍</button>
+                    <button
+                        class="btn btn-zoom btn-sm btn-outline btn-danger" (click)="closeDetails()">
+                        <strong>X</strong>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-sm small">
+                        <tbody>
+                            <tr>
+                                <th class="col-md-3 text-end">ID</th>
+                                <td class="col-md-9 justify-content">{{ selectedReceipt.idReceipt }}</td>
+                            </tr>
+                            <tr>
+                                <th  class="col-md-3 text-end">Fecha:</th>
+                                <td class="col-md-9 justify-content">{{ selectedReceipt.date| date:'medium' }}</td>
+                            </tr>
+                            <tr>
+                                <th  class="col-md-3 text-end">Pago:</th>
+                                <td class="col-md-9 justify-content">{{ paymentSummary }}</td>
+                            </tr>
+                            <tr>
+                                <th  class="col-md-3 text-end">Entrega:</th>
+                                <td class="col-md-9 justify-content">{{ FullAddress }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="mt-4"><strong>🛒 Productos</strong></h6>
+                <table class="table table-bordered table-sm small">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="col-md-5 text-center">Producto</th>
+                            <th class="col-md-1 text-center">Cantidad</th>
+                            <th class="col-md-2 text-center">Precio</th>
+                            <th class="col-md-2 text-center">Descuento</th>
+                            <th class="col-md-2 text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of selectedReceipt.items">
+                            <td class="col-md-5 justify-content">
+                                <a
+                                    [routerLink]="['/producto', item.product.idProduct]"
+                                    routerLinkActive="router-link-active"
+                                    class="btn btn-sm btn btn-outline-info text-start">
+                                    {{ item.product.productName }}
+                                </a>
+                            </td>
+                            <td class="col-md-1 text-center">{{ item.quantity | currency }}</td>
+                            <td class="col-md-2 text-start">{{ item.unitPrice | currency }}</td>
+                            <td class="col-md-2 text-start"></td>
+                            <td class="col-md-2 text-start">{{ item.totalPrice | currency }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end"><strong>Total de productos:</strong></td>
+                            <td class="text-center"><strong>{{ selectedReceipt.totalQuantity }}</strong></td>
+                            <td colspan="2" class="text-end"><strong>Total pagado:</strong></td>
+                            <td class="text-start">{{ selectedReceipt.totalAmount | currency }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <!-- Ticket de compra -->
+            <div id="receipt-content" class="mx-auto p-3 screen-only" style=" font-size: 12px; max-width: 325px;">
+                
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h3 style="margin-bottom: 0;">🛍️ {{ companyData.name }}</h3>
+                    <br>
+                    <p style="margin: 0;">RFC: {{ companyData.rfc }}</p>
+                    <p style="margin: 0;">Dirección: {{ companyData.address }}</p>
+                    <p style="margin: 0;">Telefono: {{ companyData.phone }}</p>
+                    <p style="margin: 0;">Email: {{ companyData.email }}</p>
+                    <br>
+                    <h3>Ticket de compra</h3>
+                    <hr>
+                </div>
+
+                <div>
+                    
+                    <p><strong>Folio:</strong> {{ selectedReceipt.idReceipt }}</p>
+                    <p><strong>Fecha:</strong> {{ selectedReceipt.date | date:'medium' }}</p>
+                    <p><strong>Pago:</strong> {{ paymentSummary }}</p>
+                    <p><strong>Entrega:</strong> {{ FullAddress }}</p>
+                </div>
+
+                <div style="margin-top: 10px;">
+                    <table class="table small">
+                        <thead>
+                            <tr style="background-color: #e0e0e0;">
+                            <th class="text-center">Producto</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-center">Precio</th>
+                            <th class="text-center">Descuento</th>
+                            <th class="text-center">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of selectedReceipt.items">
+                                <td>{{ item.product.productName }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-start">{{ item.unitPrice | currency }}</td>
+                                <td class="text-start">$</td>
+                                <td class="text-start">{{ item.totalPrice | currency }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-end"><strong>Total de productos:</strong></td>
+                                <td class="text-center"><strong>{{ selectedReceipt.totalQuantity }}</strong></td>
+                                <td></td>
+                                <td class="text-center"><strong>Total pagado:</strong></td>
+                                <td class="text-start"><strong>{{ selectedReceipt.totalAmount | currency }}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="container d-flex flex-column justify-content-center align-items-center">
+                    <h6><strong>Nota:</strong></h6>
+                    <ul>
+                        <li>Conserve este comprobante para aclaraciones o devoluciones.</li>
+                        <li>Garantía válida por 30 días naturales con ticket físico o digital.</li>
+                        <li>Gracias por su compra. ¡Vuelva pronto!</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

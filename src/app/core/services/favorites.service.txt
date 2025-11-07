@@ -1,0 +1,145 @@
+/***** src/app/core/services/favorites.service.ts *****/
+/* favoritesService anterior */
+
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import { AuthService } from './auth.service';
+import { Favorite, UserFavoritesEntry } from '../models/favorites.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FavoritesService {
+
+  /* ar: lista interna de favoritos agregados por ususario */
+  private userFavorites: UserFavoritesEntry[] = [];
+
+  /* ob: observable reactivo para los favoritos de todos los usuarios */
+  private favoritesSubject = new BehaviorSubject<UserFavoritesEntry[]>([]);
+  public favorites$: Observable<UserFavoritesEntry[]> = this.favoritesSubject.asObservable();
+
+  constructor(
+    private authService: AuthService
+  ) {
+    this.loadFavoritesFromLocalStorage();
+  }
+
+  /* mt: cargar favoritos desde localStorage */
+  private loadFavoritesFromLocalStorage(): void {
+    const stored = localStorage.getItem('userFavorites');
+    this.userFavorites = stored ? JSON.parse(stored): [];
+    this.favoritesSubject.next(this.userFavorites);
+  }
+
+
+
+  /* mt: guardar favorites desde localStorage */
+  private saveFavoritesToLocalStorage(): void {
+    const newData = JSON.stringify(this.userFavorites);
+    const oldData = localStorage.getItem('userFavorites');
+
+    if (newData !== oldData) {
+      localStorage.setItem('userFavorites', newData);
+      this.favoritesSubject.next(this.userFavorites);
+    }
+  }
+
+
+
+
+  /* fn: obtener todos los favoritos de un usuario */
+  public getFavoritesByUser(idUser: number): Favorite[] {
+    const entry = this.userFavorites.find(entry => entry.idUser === idUser);
+    console.log('📤 Favoritos actuales para usuario', idUser, ':', entry?.favorites || []);
+
+    return entry ? entry.favorites: [];
+  }
+
+
+
+  /* mt: agregar un favorito a un usuario */
+  public addFavoritesForUser(idUser: number, favorite: Favorite): void {
+    console.log('➕ Agregando favorito:', favorite, 'para usuario:', idUser);
+
+    const entry = this.userFavorites.find(entry => entry.idUser === idUser);
+    if (entry) {
+      const exists = entry.favorites.some(f => f.idProduct === favorite.idProduct);
+      if (!exists) {
+        entry.favorites.push(favorite);
+        this.saveFavoritesToLocalStorage(); // ✅ solo aquí
+      }
+    } else {
+      this.userFavorites.push({
+        idUser: idUser,
+        favorites: [favorite]
+      });
+      this.saveFavoritesToLocalStorage(); // ✅ solo aquí
+    }
+  } /* fin addFavoritesForUser */
+
+
+
+  /*  */
+  public getFavoritesByCurrentUser(): Observable<Favorite[]> {
+    const currentUserId = this.authService.getCurrentUser()?.idUser;
+    if (!currentUserId) {
+      return of([]);
+    }
+    return this.favorites$.pipe(
+      map(userEntries => {
+        const entry = userEntries.find(e => e.idUser === currentUserId);
+        return entry ? entry.favorites : [];
+      })
+    );
+  }
+
+  /* mt: eliminar un favorito de un usuario por indice */
+  public deleteFavoriteForUser(idUser: number, index: number): void {
+    const entry = this.userFavorites.find(entry => entry.idUser === idUser);
+
+    if (entry && entry.favorites[index]) {
+      entry.favorites.splice(index, 1);
+      this.saveFavoritesToLocalStorage();
+    }
+  }
+
+  /* mt: actualizar un metodo existente */
+  public updateFavoriteForUser(idUser: number, index: number, updatedFavorite:Favorite): void {
+    const entry = this.userFavorites.find(entry => entry.idUser === idUser);
+
+    if (entry && entry.favorites[index]) {
+      entry.favorites[index] = updatedFavorite;
+      this.saveFavoritesToLocalStorage();
+    }
+  }
+
+  /* mt: alternar (toggle) favorito de un usuario */
+    /* mt: alternar (toggle) favorito de un usuario */
+  public toggleFavoriteForUser(idUser: number, favorite: Favorite): void {
+    const entry = this.userFavorites.find(e => e.idUser === idUser);
+
+    if (entry) {
+      const index = entry.favorites.findIndex(f => f.idProduct === favorite.idProduct);
+      if (index !== -1) {
+        // 🔹 Si ya existe, eliminarlo (toggle off)
+        entry.favorites.splice(index, 1);
+        console.log(`[FavoritesService] ❌ Eliminado favorito ID: ${favorite.idProduct}`);
+      } else {
+        // 🔹 Si no existe, agregarlo (toggle on)
+        entry.favorites.push(favorite);
+        console.log(`[FavoritesService] ❤️ Agregado favorito ID: ${favorite.idProduct}`);
+      }
+    } else {
+      // 🔹 Crear entrada nueva si no existe para este usuario
+      this.userFavorites.push({
+        idUser,
+        favorites: [favorite]
+      });
+      console.log(`[FavoritesService] 🌱 Nueva lista creada para usuario ${idUser}`);
+    }
+
+    this.saveFavoritesToLocalStorage();
+  } /* fin toggleFavoriteForUser */
+
+
+}

@@ -1,0 +1,260 @@
+<!-- ***** src/app/pages/form/form-register/form-register.component.html ***** -->
+
+<div class="container-fluid px-2 px-md-5">
+  <div class="row justify-content-center align-items-stretch g-0" style="min-height: 100vh;">
+  
+    <!-- Columna imagen -->
+    <div class="col-md-5 d-none d-md-flex align-items-center justify-content-center bg-light">
+      <img
+        src="/assets/images/logo-register.jpg"
+        class="img-fluid w-100 h-auto m-0 p-0"
+        style="max-height: 100%; object-fit: cover;"
+        alt="Registro FullStorage" />
+    </div>
+  
+    <!-- Columna para el formulario -->
+    <div class="col-md-7 d-flex justify-content-center align-items-center p-3">
+      <div class="card shadow-lg w-100" style="max-width: 650px; padding: 1.5rem;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-3">
+            <h3 class="text-center w-100 mb-4">Registro de Usuario</h3>
+          </div>
+  
+          <!-- FORMULARIO -->
+          <form [formGroup]="form" (ngSubmit)="registerUser()">
+            
+            <!-- Imagen de usuario -->
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="imgUser" class="form-label small">Selecciona tu imagen de usuario</label>
+                
+                <input
+                  type="file"
+                  id="imgUser"
+                  class="form-control form-control-sm"
+                  accept="image/*"
+                  (change)="onImageSelected($event)"
+                  formControlName="imgUser"
+                />
+                
+                <!-- Validación -->
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                  <span *ngIf="form.get('imgUser')?.touched && form.get('imgUser')?.invalid">
+                    La imagen de usuario es obligatoria.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nombre, edad y género -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label small">Nombre Completo</label>
+                <input type="text" id="name" class="form-control form-control-sm"
+                  formControlName="name" (blur)="nameTouched = true"
+                  required placeholder="Ingresa tu nombre..."
+                />
+                <div
+                    class="text-danger small mt-1"
+                    [style.minHeight]="'1.25rem'"
+                  >
+                  <span *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+                    Debes ingresar tu nombre completo
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label for="age" class="form-label small">Edad</label>
+                <input
+                    type="number"
+                    id="age"
+                    class="form-control form-control-sm"
+                    formControlName="age"
+                    (blur)="ageTouched = true"
+                    required
+                />
+                <div
+                    class="text-danger small mt-1"
+                    [style.minHeight]="'1.25rem'"
+                >
+                  <span *ngIf="form.get('age')?.touched && form.get('age')?.invalid">
+                    Ingresar tu edad
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label for="gender" class="form-label small">Género</label>
+                <select
+                  id="gender"
+                  class="form-control form-control-sm"
+                  formControlName="gender"
+                  [class.is-invalid]="form.get('gender')?.touched && form.get('gender')?.invalid"
+                >
+                  <option value="" selected>Selecciona...</option>
+                  <option [ngValue]="gender.male">Masculino</option>
+                  <option [ngValue]="gender.female">Femenino</option>
+                </select>
+                <div
+                  class="text-danger small mt-1"
+                  [style.minHeight]="'1.25rem'"
+                >
+                  <span *ngIf="form.get('gender')?.touched && form.get('gender')?.invalid">
+                    Elige un género.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email y nombre de usuario -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="email" class="form-label small">Correo Electrónico</label>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control form-control-sm"
+                  formControlName="email"
+                  (blur)="emailTouched = true"
+                  autocomplete="new-password"
+                  required
+                  placeholder="Ingresa tu correo electrónico"
+                />
+                <div
+                  class="text-danger small mt-1"
+                  [style.minHeight]="'1.25rem'"
+                >
+                  <span *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+                    Debes ingresar un correo electrónico válido
+                  </span>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="username" class="form-label small">Nombre de Usuario</label>
+                    <input
+                        type="text"
+                        id="username"
+                        class="form-control form-control-sm"
+                        formControlName="username"
+                        (blur)="usernameTouched = true"
+                        autocomplete="new-password"
+                        required
+                        placeholder="Ingresa un nombre de usuario"
+                    />
+                    <div class="text-danger small mt-1">
+                        <span *ngIf="form.get('username')?.touched && form.get('username')?.invalid">
+                        Debes ingresar un nombre de usuario
+                        </span>
+                    </div>
+                </div>
+            </div>  
+          
+            <!-- Contraseña y confirmar contraseña -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label small d-flex align-items-center justify-content-between">
+                  Contraseña
+                  <i
+                    [class.fas]="true"
+                    [class.fa-eye]="!passwordVisible"
+                    [class.fa-eye-slash]="passwordVisible"
+                    style="top:38px; right: 10px; cursor: pointer;"
+                    (click)="togglePasswordVisibility()">
+                  </i>
+                </label>
+                <input
+                  [type]="passwordVisible ? 'text' : 'password'"
+                  id="password"
+                  class="form-control form-control-sm"
+                  formControlName="password"
+                  (blur)="passwordTouched = true"
+                  autocomplete="off"
+                  required
+                  minlength="8"
+                  placeholder="Ingresa tu contraseña"
+                />                
+                <div
+                  class="text-danger small mt-1"
+                  [style.minHeight]="'1.25rem'">
+                  <span *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+                    Debes ingresar una contraseña
+                  </span>
+                  <br>
+                  <span *ngIf="form.get('password')?.value && confirmPassword && form.get('password')?.value !== confirmPassword">
+                    Las Contraseñas no coinciden
+                  </span>
+                </div>
+              </div>
+            
+            <div class="col-md-6">
+              <label class="form-label small d-flex align-items-center justify-content-between">
+                  Confirmar Contraseña
+                  <i
+                  [class.fas]="true"
+                  [class.fa-eye]="!confirmPasswordVisible"
+                  [class.fa-eye-slash]="confirmPasswordVisible"
+                  style="top:38px; right: 10px; cursor: pointer;"
+                  (click)="togglePasswordVisibilityConfirm()"
+                  ></i>
+              </label>
+              <input
+                  [type]="confirmPasswordVisible ? 'text' : 'password'"
+                  id="confirmPassword"
+                  class="form-control form-control-sm"
+                  formControlName="confirmPassword"
+                  (blur)="confirmPasswordTouched = true"
+                  autocomplete="off"
+                  required
+                  minlength="8"
+                  placeholder="Confirma tu contraseña"
+              />
+              <div
+                  class="text-danger small mt-1"
+              >
+                  <span *ngIf="form.get('confirmPassword')?.touched && form.get('confirmPassword')?.invalid">
+                  Debes confirmar tu contraseña
+                  </span>
+                  <br>
+                  <span *ngIf="form.get('password')?.value !== form.get('confirmPassword')?.value && form.get('confirmPassword')?.touched">
+                  Las Contraseñas no coinciden
+                  </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Botones -->
+          <div class="d-flex justify-content-between mt-4">
+            <button
+              class="btn btn-primary"
+              type="submit"
+              [disabled]="!form.valid">
+              Registrar Usuario
+            </button>
+            <button
+              class="btn btn-secondary"
+              type="button"
+              (click)="confirmCancel()"
+              [disabled]="!form.dirty">
+              Cancelar
+            </button>
+          </div>
+
+          <!-- Mensaje de estado del formulario -->
+          <div class="mt-2" style="min-height: 1.5rem;">
+            <small 
+              [ngClass]="{
+                'text-success': isFormReady(),
+                'text-danger': !isFormReady()
+              }">
+              {{ isFormReady() ? '✅' : '❌ Faltan datos obligatorios para enviar.' }}
+            </small>
+          </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

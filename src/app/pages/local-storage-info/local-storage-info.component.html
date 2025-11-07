@@ -1,0 +1,26 @@
+<div class="storage-info d-flex align-items-center justify-content-center gap-2 p-2 shadow-sm bg-body-tertiary rounded">
+    
+    <!-- Barra de progreso -->
+    <div class="progress flex-grow-1" style="height: 20px; max-width: 250px;">
+        <div class="progress-bar"
+            [ngClass]="color"
+            [style.width.%]="(usage.usedMB / usage.limitMB) * 100"
+            role="progressbar"
+            [attr.aria-valuenow]="usage.usedMB"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="usage.limitMB">
+        {{ usage.usedMB }} / {{ usage.limitMB }} MB
+        </div>
+    </div>
+
+    <!-- Texto de información -->
+    <span class="small text-secondary text-nowrap">
+        {{ ((usage.usedMB / usage.limitMB) * 100) | number:'1.0-0' }}%
+    </span>
+
+    <!-- Botones compactos -->
+    <button class="btn btn-outline-secondary btn-sm" (click)="updateUsage()">🔄</button>
+    <button class="btn btn-outline-warning btn-sm" (click)="clearStorageKey('userFavorites')">★</button>
+    <button class="btn btn-outline-danger btn-sm" (click)="clearStorageKey('app_sales_v1')">💰</button>
+
+</div>

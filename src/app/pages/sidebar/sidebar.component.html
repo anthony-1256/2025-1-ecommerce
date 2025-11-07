@@ -1,0 +1,16 @@
+<!-- src/app/components/sidebar/sidebar.component.html -->
+<div class="p-4 text-white">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 class="h4">Dispositivos de almacenamiento</h5>        
+    </div>
+
+    <hr class="bg-light">
+    
+    <div>
+        <ul class="list-unstyled">
+            <li *ngFor="let category of categories">
+            <a href="#" (click)="selectCategory(category)">{{ category }}</a>
+            </li>
+        </ul>
+    </div>    
+</div>

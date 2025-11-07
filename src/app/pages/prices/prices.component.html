@@ -1,0 +1,99 @@
+<!-- src/app/prices/prices.component.html -->
+<div class="container mt-4">
+    <h2 class="mb-3">Gestión de Precios</h2>
+
+    <table class="table table-bordered table-striped align-middle">
+
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Precio Actual</th>
+                <th>Switch de ofertas</th>
+                <th>Ajuste oferta % <!-- (unicamente porcentage de descuento del 1% al 100%) --> </th>
+                <th>Ajuste precio <!-- (directamente a precio sin %, aumentar o disminuir precio actual del 1 y sin limite hacia arriba) --></th>                
+                <th>Ajuste temporal del precio actual <!-- hasta que se guarda precio se actualiza columna de precio actual y esta columna se pone en cero --></th>
+                <th>Oferta (toggle) </th>
+                <th colspan="3" class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <tr *ngFor="let product of products$ | async">
+                <td> {{ product.idProduct }} </td>
+                <td> {{ product.productName }} </td>
+                <td> {{ product.quantity }} </td>
+                <td> {{ product.price | currency }} </td>
+                <td>
+                    <button
+                        class="btn"
+                        [ngClass]="getActiveAdjustment(product.idProduct) === 'percentage' ? 'btn-success' : 'btn-primary'"
+                        (click)="toggleAdjustment(product.idProduct, getActiveAdjustment(product.idProduct) === 'percentage' ? 'direct' : 'percentage')"
+                        [disabled]="!editMode[product.idProduct]"
+                        >
+                        {{ getActiveAdjustment(product.idProduct) === 'percentage' ? 'Descuento %' : 'Precio directo' }}
+                    </button>
+                </td>                
+                <td>
+                    <input
+                        type="number"
+                        id="perc-{{ product.idProduct }}"
+                        class="form-control"
+                        min="1"
+                        max="100"                        
+                        (input)="calculatePercentageDiscount(product.idProduct, $any($event.target).valueAsNumber)"
+                        [disabled]="!editMode[product.idProduct] || getActiveAdjustment(product.idProduct) !== 'percentage'"
+                    >%
+                    </td>
+                <td>
+                    $
+                    <input
+                        type="number"
+                        id="dir-{{ product.idProduct }}"
+                        class="form-control"
+                        min="1"
+                        (input)="applyDirectPrice(product.idProduct, $any($event.target).valueAsNumber)"
+                        [disabled]="!editMode[product.idProduct] || getActiveAdjustment(product.idProduct) !== 'direct'"                        
+                    >    
+                </td>
+                <td>
+                    {{ priceTemporary[product.idProduct] | currency }}
+                </td>                
+                <td>
+                    <input
+                        type="checkbox"
+                        [checked]="product.isOffer ?? false"
+                        (change)="toggleOffer(product, $any($event.target).checked)"
+                        [disabled]="!editMode[product.idProduct]"
+                        >
+                </td>
+                <td>
+                    <button
+                        class="btn btn-warning"                        
+                        (click)="enableEditMode(product.idProduct)">
+                        Editar
+                    </button>
+                </td>
+                <td>
+                    <button
+                        class="btn btn-success"
+                        (click)="saveEdit(product.idProduct)"
+                        [disabled]="!editMode[product.idProduct]">
+                        Guardar
+                    </button>
+                </td>
+                <td>
+                    <button
+                        class="btn btn-secondary"
+                        (click)="cancelEdit(product.idProduct)"
+                        [disabled]="!editMode[product.idProduct]"  
+                        >
+                        Cancelar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>        

@@ -1,0 +1,44 @@
+<!-- ***** src/app/pages/confirmation/confirmation.component.html ***** -->
+
+<div class="confirmation-container">
+
+    <h2>!Compra realizada con éxito!</h2>
+
+    <ng-container *ngIf="lastReceipt; else noReceipt">
+        
+        <section class="receipt-info">
+            <h3>Recibo #{{ lastReceipt.idReceipt }}</h3>
+            <p><strong>Fecha:</strong> {{ lastReceipt.date | date:'medium' }} </p>
+            <p><strong>Método de pago:</strong> {{ lastReceipt.paymentMethod.method }}</p>
+            <p><strong>Dirección de entrega:</strong> {{ lastReceipt.deliveryAddress }}</p>
+
+            <hr>
+
+            <h4>Productos comprados:</h4>
+            <ul>
+                <li *ngFor="let item of lastReceipt.items">
+                    {{ item.product.productName }} - Cantidad: {{ item.quantity }} - Precio: ${{ item.unitPrice }} - Total: ${{ item.totalPrice }}
+                </li>
+            </ul>
+
+            <hr>
+
+            <p><strong>Total de productos:</strong> {{ lastReceipt.totalQuantity }}</p>
+            <p><strong>total a pagar:</strong> {{ lastReceipt.totalAmount }} </p>
+
+            <p class="thankyou-note">{{ lastReceipt.notes }}</p>
+        </section>
+
+        <div class="actions">
+            <button (click)="downloadPdf()">Descargar PDF</button>
+            <button (click)="goToHistory()">Ver historial</button>
+            <button (click)="gotoProducts()">Seguir comprando</button>
+            <button (click)="goToProfile()">Ir al perfil</button>
+        </div>
+    </ng-container>
+
+    <ng-template #noReceipt>
+        <p>No se encontró ningún recibo reciente.</p>
+        <button (click)="gotoProducts()">Volver a productos</button>
+    </ng-template>
+</div>

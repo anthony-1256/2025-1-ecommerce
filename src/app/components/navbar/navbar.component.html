@@ -1,0 +1,159 @@
+<!-- ***** src/app/components/navbar/navbar.component.html ***** -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
+  <div class="container-fluid">
+
+    <!-- Getter de Imagen de usuario -->
+    <img 
+      [src]="userImage"
+      alt="imagen de: {{ currentUser?.username || 'invitado' }}"
+      width="50px"
+      height="auto">
+
+    <a class="navbar-brand">FullStorage</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="z-index: 1055;">
+
+        <!-- ******************************************************************************** -->
+        <!-- Siempre visible -->
+        <li class="nav-item">
+          <a class="nav-link active" [routerLink]="['/ofertas']">Inicio</a>
+        </li>
+
+        <!-- ******************************************************************************** -->
+        <!-- Siempre visible -->
+        <li class="nav-item">
+          <a class="nav-link active" [routerLink]="['/productos']">Productos</a>
+        </li>
+
+        <!-- ******************************************************************************** -->
+        <!-- Siempre visible -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+            Configuración
+          </a>
+          <ul class="dropdown-menu" style="z-index: 1055;">
+            <li>
+              <a class="dropdown-item" href="#">
+
+                Modo claro
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+
+                Modo oscuro
+              </a>
+            </li>
+
+            <!-- borrar en un futuro cuando ya no se tenga necesidad de conservarlo -->
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/bootstrap']">
+                Estilos
+              </a>
+            </li>
+            <!-- borrado hasta aqui -->
+            
+          </ul>
+        </li>
+
+        <!-- ******************************************************************************** -->
+        
+        <!-- Cuenta de tipo de usuario -->        
+        <!-- role guest -->        
+        @if (!isLoggedIn) {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Ingresar
+            </a>
+            <ul class="dropdown-menu" style="z-index: 1055;">
+              <li class="dropdown-item" [routerLink]="['/inicioSesion']">Iniciar sesión</li>
+              <li><hr class="dropdown-divider"></li>
+              <li class="dropdown-item" [routerLink]="['/registro']">Registro</li>
+            </ul>
+          </li>
+
+          <!-- role user -->
+          } @if ( isLoggedIn && !isAdmin ) {
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                {{currentUser?.username}}
+              </a>
+              <ul class="dropdown-menu" style="z-index: 1055;">
+                <li class="dropdown-item" [routerLink]="['/perfilUsuario']">Mi perfil</li>
+                <li class="dropdown-item" [routerLink]="['/carrito']">Mi carrito ((  ))</li>
+                <li><hr class="dropdown-divider"></li>
+                <li class="dropdown-item" (click)="logout()">Cerrar sesión</li>
+              </ul>
+            </li>
+          }
+          
+          <!-- role admin -->
+
+          @if ( isAdmin ) {
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Administrador {{ currentUser?.username }}
+              </a>
+              <ul class="dropdown-menu" style="z-index: 1055;">
+                <li class="dropdown-item" [routerLink]="['/perfilAdmin']">Mi perfil</li>
+                <li class="dropdown-item" [routerLink]="['/marcas']">Gestión de marcas (( inventarios.length )) </li>
+                <li class="dropdown-item" [routerLink]="['/inventario']">Gestión de inventarios (( inventarios.length )) </li>
+                <li class="dropdown-item" [routerLink]="['/precios']">Gestión de precios y ofertas (( ofertas.length ))</li>
+                <li class="dropdown-item" [routerLink]="['/usuarios']">Gestión de usuarios (( usuarios.length ))</li>
+                <li class="dropdown-item" [routerLink]="['/masVendidos']">Mas vendidos (( usuarios.length ))</li>
+                <li><hr class="dropdown-divider"></li>
+                <li class="dropdown-item" (click)="logout()">Cerrar sesión</li>
+              </ul>
+            </li>
+          }
+      </ul>
+
+      <div>
+        <app-local-storage-info></app-local-storage-info>
+      </div>
+      <div>Agregar observables a categorias de sidebar, marcas mas vendidas, productos mas vendidos, revisar en cual checkout no muestra total a pagar</div>
+
+      <!-- ******************************************************************************** -->
+      <!-- Busqueda siempre visible -->
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+
+      <!-- ******************************************************************************** -->
+      <!-- Boton Sidebar -->
+      <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ******************************************************************************** -->
+
+<!-- ******************************************************************************** -->
+
+<!-- Sidebar tipo overlay desde la derecha -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="navbarToggleExternalContent" aria-labelledby="offcanvasRightLabel" data-bs-theme="dark">
+  <div class="offcanvas-header">
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>    
+  </div>
+  <div class="offcanvas-body">
+    <!-- SidebarComponent renderiza categorías -->
+    <app-sidebar (categorySelected)="onCategorySelected($event)"></app-sidebar>
+  </div>
+</div>

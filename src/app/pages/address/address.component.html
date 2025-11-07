@@ -1,0 +1,54 @@
+<!-- src/app/pages/address/address.component.html -->
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Mis diecciones de entrega</h3>
+
+    <!-- Botones superiores -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 25px; padding-bottom: 25px;">
+        <button
+            class="btn btn-outline-primary btn-sm"
+            [routerLink]="['/perfilAdmin']" routerLinkActive="router-link-active"
+            >Regresar al perfil</button>
+        <button
+            class="btn btn-outline-primary btn-sm"
+            [routerLink]="['/addAddress']"
+            routerLinkActive="router-link-active"
+            >Agregar dirección</button>
+    </div>
+
+    <div *ngIf="(addresses$ | async )?.length === 0" class="alert alert-info text-center">
+        No hay direccciones agregadas.
+    </div>
+
+    <!-- Tarjetas tipo "renglón horizontal" -->
+    <ng-container *ngIf="( addresses$ | async ) as addAddress">
+        <div class="row">
+            <div class="col-12 mb-2" *ngFor="let address of addresses$ | async; let i = index">
+                <div class="card shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+
+                    <!-- Informacion -->
+                    <div>
+                        <strong> {{ address.street }} {{ address.number }} </strong>,
+                        {{ address.neighborhood }}, {{ address.city }},
+                        CP{{ address.postalCode }} - {{ address.state }} <br />
+                        📞 Tel: {{ address.phone }} / 📱 Cel: {{ address.cellPhone }}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button                            
+                            class="btn btn-outline-warning btn-sm"
+                            [routerLink]="['/addAddress']"
+                            [state]="{ addressToEdit: address, editIndex: i }">
+                            Editar
+                        </button>
+                        <button                            
+                            class="btn btn-outline-danger btn-sm"
+                            (click)="onDeleteAddress(i)">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+</div>

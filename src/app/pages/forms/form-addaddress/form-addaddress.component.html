@@ -1,0 +1,175 @@
+<!-- src/app/pages/forms/form-addaddress/form-addaddress.component.html -->
+<div class="container mt-4">
+    <div
+        class="d-flex justify-content-center mt-4"
+        style="display: flex; justify-content: center; align-items: center; gap: 25px;">
+        <h4 class="text-center mb-4">
+            {{ addressToEdit ? 'Editar dirección' : 'Agregar nueva dirección' }}
+        </h4>        
+    </div>
+
+    <form [formGroup]="addressForm" (ngSubmit)="onSubmit()">
+
+        <!-- Dirección de entrega -->
+        <div class="row mb-3">
+
+            <div class="col-md-4">
+                <label for="street" class="form-label">Calle</label>
+                <input id="street" type="text" class="form-control form-control-sm"
+                    formControlName="street"
+                    [class.is-invalid]="addressForm.get('street')?.touched && addressForm.get('street')?.invalid"
+                    (blur)="addressForm.get('street')?.markAsTouched()" />
+
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('street')?.touched && addressForm.get('street')?.invalid">
+                        La calle es obligatoria
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label for="number" class="form-label">Número</label>
+                <input id="number" type="number" class="form-control form-control-sm"
+                    formControlName="number"
+                    [class.is-invalid]="addressForm.get('number')?.touched && addressForm.get('number')?.invalid"
+                    (blur)="addressForm.get('number')?.markAsTouched()" />
+                
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('number')?.touched && addressForm.get('number')?.invalid">
+                        Número obligatorio
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="neighborhood" class="form-label">Colonia</label>
+                <input id="neighborhood" type="text" class="form-control form-control-sm"
+
+                    formControlName="neighborhood"
+                    [class.is-invalid]="addressForm.get('neighborhood')?.touched && addressForm.get('neighborhood')?.invalid"
+                    (blur)="addressForm.get('neighborhood')?.markAsTouched()" />
+                
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('neighborhood')?.touched && addressForm.get('neighborhood')?.invalid">
+                        La colonia es obligatoria
+                    </span>
+                </div>                
+            </div>
+
+            <div class="col-md-2">
+                <label for="postalCode" class="form-label">Código Postal</label>
+                <input id="postalCode" type="text" class="form-control form-control-sm"
+                
+                    formControlName="postalCode"
+                    [class.is-invalid]="addressForm.get('postalCode')?.touched && addressForm.get('postalCode')?.invalid"
+                    (blur)="addressForm.get('postalCode')?.markAsTouched()" />
+                
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('postalCode')?.touched && addressForm.get('postalCode')?.invalid">
+                        Código Postal obligatorio
+                    </span>
+                </div>                
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="city" class="form-label">Ciudad</label>
+                <input id="city" type="text" class="form-control form-control-sm"
+                
+                    formControlName="city"
+                    [class.is-invalid]="addressForm.get('city')?.touched && addressForm.get('city')?.invalid"
+                    (blur)="addressForm.get('city')?.markAsTouched()" />
+                
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('city')?.touched && addressForm.get('city')?.invalid">
+                        La Ciudad es obligatoria
+                    </span>
+                </div>                
+            </div>
+
+            <div class="col-md-6">
+                <label for="state" class="form-label">Estado</label>
+                <input id="state" type="text" class="form-control form-control-sm"
+                
+                    formControlName="state"
+                    [class.is-invalid]="addressForm.get('state')?.touched && addressForm.get('state')?.invalid"
+                    (blur)="addressForm.get('state')?.markAsTouched()" />
+                
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('state')?.touched && addressForm.get('state')?.invalid">
+                        El Estado es obligatorio
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="phone" class="form-label">Teléfono</label>
+                <input id="phone" type="tel" class="form-control form-control-sm"
+                
+                    formControlName="phone"
+                    [class.is-invalid]="addressForm.get('phone')?.touched && addressForm.get('phone')?.invalid"
+                    (blur)="addressForm.get('phone')?.markAsTouched()" />
+                
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('phone')?.touched && addressForm.get('phone')?.invalid">
+                        El Teléfono es obligatorio
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="cellPhone" class="form-label">Celular</label>
+                <input id="cellPhone" type="text" class="form-control form-control-sm"
+                
+                    formControlName="cellPhone"
+                    [class.is-invalid]="addressForm.get('cellPhone')?.touched && addressForm.get('cellPhone')?.invalid"
+                    (blur)="addressForm.get('cellPhone')?.markAsTouched()" />
+                
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                    <span *ngIf="addressForm.get('cellPhone')?.touched && addressForm.get('cellPhone')?.invalid">
+                        El Celular es obligatorio
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-center mt-4"
+            style="display: flex; justify-content: center; align-items: center; gap: 25px;">
+            <button
+                class="btn btn-dark"
+                type="button"
+                (click)="goToAddresses()">
+                Direcciones registradas
+            </button>
+            <button
+                class="btn btn-primary"
+                type="submit"
+                [disabled]="addressForm.invalid">
+                Guardar dirección
+            </button>
+            <button
+                class="btn btn-secondary"
+                type="button"                
+                (click)="confirmCancel()"
+                [disabled]="!addressForm.dirty">
+                Cancelar
+            </button>
+        </div>
+
+        <div class="mt-2" style="min-height: 1.5rem;">
+            <small
+                [ngClass]="{
+                    'text-center': isFormReady(),
+                    'text-danger': !isFormReady()
+                }">
+                {{ isFormReady() ? '✅' : '❌ Faltan datos obligatorios para enviar.' }}
+            </small>
+        </div>
+
+    </form>
+</div>

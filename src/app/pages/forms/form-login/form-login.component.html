@@ -1,0 +1,92 @@
+<!-- ***** src/app/pages/forms/form-login/form-login.component.html ***** -->
+
+<div class="container-fluid p-0">
+
+    <!-- Contenedor principal con margen centrado -->
+    <div class="row justify-content-center no-gutters">
+  
+      <!-- Contenedor horizontal: imagen a la izquierda, formulario a la derecha -->
+      <div
+        class="w-75 d-flex flex-column flex-md-row p-0 shadow-lg rounded overflow-hidden"
+        style="background-color: white; display: flex; justify-content: center; align-items: center;"
+      >
+  
+        <!-- Imagen de login: visible solo en pantallas md+ -->
+        <div class="col-md-6 d-none d-md-block p-0">
+          <img
+            src="/assets/images/logo-login.jpg"
+            alt="Inicio de sesión FullStorage"
+            class="img-fluid w-100 h-%"
+            style="object-fit: cover; height: 75%;"
+          />
+        </div>
+  
+        <!-- Contenedor del formulario -->
+        <div class="col-12 col-md-6 p-4">
+          <h3 class="text-center mb-4">Inicia sesión</h3>
+  
+          <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
+  
+            <!-- Email o usuario -->
+            <div class="mb-3">
+              <label for="emailOrUsername" class="form-label small">Correo Electrónico o Usuario</label>
+              <input
+                type="text"
+                id="emailOrUsername"
+                class="form-control form-control-sm"
+                formControlName="emailOrUsername"
+                name="emailOrUsername"
+                autocomplete="email"
+                required
+                placeholder="Ingresa tu correo o nombre de usuario" />
+
+                <!-- Validación -->
+                <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                  <span *ngIf="formLogin.get('emailOrUsername')?.invalid && formLogin.get('emailOrUsername')?.touched"
+                    class="text-danger small mt-1">
+                    Campo obligatorio.
+                  </span>
+                </div>
+            </div>
+  
+            <!-- Contraseña -->
+            <div class="mb-3 position-relative">
+              <label for="password" class="form-label small d-flex justify-content-between">
+                Contraseña
+                <i
+                  class="fa"
+                  [class.fa-eye]="!passwordVisible"
+                  [class.fa-eye-slash]="passwordVisible"
+                  style="cursor: pointer;"
+                  (click)="togglePasswordVisibility()">
+                </i>
+              </label>
+              <input
+                [type]="passwordVisible ? 'text' : 'password'"
+                id="password"
+                class="form-control form-control-sm"
+                formControlName="password"
+                autocomplete="off"
+                required
+                minlength="8"
+                placeholder="Ingresa tu contraseña" />
+              
+              <div class="text-danger small mt-1" [style.minHeight]="'1.25rem'">
+                <span *ngIf="formLogin.get('password')?.touched && formLogin.get('password')?.invalid"
+                class="text-danger small mt-1">
+                La contraseña es obligatoria y debe tener al menos 8 caracteres.
+                </span>
+              </div>
+            </div>
+  
+            <!-- Botones -->
+            <div class="d-flex justify-content-between flex-wrap gap-3 mt-4">
+              <button class="btn btn-primary px-4" type="submit">Iniciar Sesión</button>
+              <button class="btn btn-secondary px-4" type="button" (click)="resetForm()">Cancelar</button>
+            </div>
+  
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

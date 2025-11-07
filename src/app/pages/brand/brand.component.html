@@ -1,0 +1,55 @@
+<!-- ***** src/app/pages/brand/brand.component.html ***** -->
+
+<div class="container py-3">
+
+    <h4 class="mb-3">Gestión de Marcas</h4>
+
+    <!-- Formulario para agregar nueva marca -->
+    <form (ngSubmit)="addBrand()">
+        <div class="mb-3">
+            <label for="brandName" class="form-label">Nombre de la marca</label>
+            <input type="text" id="brandName" class="form-control" [(ngModel)]="newBrand.name" name="name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="brandLogoUrl" class="form-label">Logo (URL)</label>
+            <input type="text" id="brandLogoUrl" class="form-control" [(ngModel)]="newBrand.logo" name="logoUrl" placeholder="Ingrese URL del logo">
+        </div>
+
+        <div class="mb-3">
+            <label for="brandLogoFile" class="form-label">O subir archivo local</label>
+            <input type="file" id="brandLogoFile" class="form-control" (change)="onLogoFileSelected($event)" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Agregar marca</button>
+    </form>
+
+    <!-- Tabla de marcas -->
+    <div class="table-responsive border rounded shadow-sm p-2">
+        <table class="table table-bordered table-striped mb-0">
+        <thead class="table-dark">
+            <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Logo</th>
+            <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let brand of brands">
+            <td>{{ brand.idBrand }}</td>
+            <td>
+                <input type="text" class="form-control" [(ngModel)]="brand.name" name="brandName{{brand.idBrand}}">
+            </td>
+            <td>
+                <input type="text" class="form-control" [(ngModel)]="brand.logo" name="brandLogo{{brand.idBrand}}">
+            </td>
+            <td>
+                <button class="btn btn-primary btn-sm me-2" (click)="updateBrandById(brand)">Actualizar</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteBrandById(brand.idBrand)">Eliminar</button>
+            </td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+</div>

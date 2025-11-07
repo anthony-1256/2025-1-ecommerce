@@ -1,0 +1,115 @@
+<!-- src/app/pages/checkout/checkout.component.html -->
+<div class="d-flex justify-content-between gap-4 align-items-start">
+    <!-- <h1>Resumen de tu compra</h1> -->
+
+    <!-- columna izquierda: direcciones + metodos -->
+    <div class="flex-grow-1 shadow-lg p-3 m-4 rounded">
+        <h2 class="mb-3">Opciones de entrega</h2>
+
+        <div *ngIf="addresses.length > 0; else noAddresses">
+            <select class="form-select mb-3"
+                [(ngModel)]="selectedAddress"
+                name="selectedAddress"
+                [compareWith]="compareAddresses">
+                <option *ngFor="let address of addresses" [ngValue]="address">
+                    {{ address.street }} {{ address.number }}, {{ address.city }}, {{ address.state }} - CP: {{ address.postalCode }}
+                </option>
+            </select>
+        </div>
+
+        <ng-template #noAddresses>
+            <div class="alert alert-info text-center">
+                Sin direcciones registradas.
+            </div>
+        </ng-template>
+
+        <!-- Botón: agregar dirección (modal) -->
+        <div class="mb-4">
+            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalAddAddress">
+                + Agregar nueva dirección
+            </button>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Métodos de pago -->
+        <h4 class="mb-3">Método de pago</h4>        
+
+        <div class="mb-3">
+            <label for="paymentMethod" class="form-label">Selecciona un método de pago</label>
+
+            <div *ngIf="userPaymentMethods.length > 0; else noPaymentMethods">
+                <select class="form-select mb-3"
+                    [(ngModel)]="selectedPaymentMethod"
+                    name="selectedPaymentMethod"
+                    [compareWith]="comparePayments">
+                    <option *ngFor="let pay of userPaymentMethods" [ngValue]="pay">
+                        {{ pay.alias || pay.method }}<span *ngIf="pay.bank"> - {{ pay.bank }}</span>
+                    </option>
+                </select>
+            </div>
+        
+            <ng-template #noPaymentMethods>
+                <div class="alert alert-info text-center">
+                    No hay métodos de pago registrados.
+                </div>
+            </ng-template>
+        </div>
+    
+        <!-- Boton agregar mostrar formulario de nuevo método -->
+        <div class="d-flex justify-content-start">
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalAddPayment">
+                + Agregar nuevo método de pago
+            </button>
+        </div>
+    </div>
+
+    <!-- Columna derecha, resumen -->
+    <div class="checkout-summary-container d-flex flex-column align-items-center gap-3 shadow-lg p-3 m-4 rounded" style="min-width: 300px;">
+                
+        <h3>Resumen de compra</h3>
+        <!-- Resumen final -->
+        <div class="text-end mt-3">
+            <p><strong>Total de productos: </strong>{{ totalQuantity }}</p>
+            <p>
+                <strong>Total a pagar: </strong>
+                {{ totalPrice | currency}}
+            </p>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <button class="btn btn-primary" (click)="onBackToCart()">Regresar a carrito</button>
+            <button class="btn btn-secondary" (click)="onCancelPurchase()">Cancelar</button>
+            <button class="btn btn-success" (click)="onCompletePurchase()">Confirmar compra</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Agregar dirección -->
+<div class="modal fade" id="modalAddAddress" tabindex="-1" aria-labelledby="modalAddAddressLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content fs-sm">
+            <div class="modal-header">                
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body py-3 px-4">
+                <app-form-addaddress></app-form-addaddress>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Agregar método de pago -->
+<div class="modal fade" id="modalAddPayment" tabindex="-1" aria-labelledby="modalAddPaymentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">                
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <app-form-addpayment></app-form-addpayment>
+            </div>
+        </div>
+    </div>
+</div>

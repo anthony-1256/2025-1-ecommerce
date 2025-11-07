@@ -1,0 +1,258 @@
+<!-- ***** src/app/pages/users/users.component.html ***** -->
+<!-- 🧱 Contenedor general -->
+<div class="container-fluid p-3 bg-light rounded-3 shadow-sm">
+
+  <!-- 🔍 Input búsqueda -->
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="search-icon">
+      <i class="bi bi-search"></i>
+    </span>
+    
+    <input
+      type="text"      
+      class="form-control"
+      placeholder="Buscar usuarios..."
+      aria-label="Buscar Usuarios"
+      aria-describedby="search-icon"
+      (input)="filterByAllFields($event)" />
+  </div>
+
+    <!-- ➕ Botón agregar -->
+    <div class="mb-3">
+      <button class="btn btn-primary" (click)="openAddUserModal()">
+        + Agregar usuario
+      </button>
+    </div>
+
+    <div
+      class="modal fade"
+      id="addUserModal"
+      tabindex="-1"
+      aria-labelledby="addUserModalLabel"
+      aria-hidden="true"
+      >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addUserModalLabel">Agregar nuevo usuario</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <app-form-adminreg (userRegistered)="onUserRegistered($event)"></app-form-adminreg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  
+    <!-- 🔁 Scroll superior sincronizado -->
+    <div 
+      id="scroll-top" 
+      class="mb-1" 
+      style="overflow-x: auto; position: relative; height: 20px;"
+      onscroll="document.getElementById('scroll-wrapper').scrollLeft = this.scrollLeft">
+
+    <!-- Contenedor real con ancho sincronizado con la tabla -->
+    <div style="width: fit-content; height: 0; overflow: hidden;">
+      <table class="table w-auto m-0 p-0 border-0" style="visibility: hidden;">
+        <thead>
+          <tr>
+            <th style="min-width: 80px;"></th>
+            <th style="min-width: 100px;"></th>
+            <th style="min-width: 180px;"></th>
+            <th style="min-width: 80px;"></th>
+            <th style="min-width: 100px;"></th>
+            <th style="min-width: 200px;"></th>
+            <th style="min-width: 150px;"></th>
+            <th style="min-width: 160px;"></th>
+            <th style="min-width: 100px;"></th>
+            <th style="min-width: 120px;"></th>
+            <th style="min-width: 100px;"></th>
+            <th style="min-width: 100px;"></th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+
+  <!-- 📋 Tabla dentro de contenedor scroll principal -->
+<div
+  id="scroll-wrapper" 
+  style="max-height: 400px; overflow-x: auto; overflow-y: auto;"
+  onscroll="document.getElementById('scroll-top').scrollLeft = this.scrollLeft; document.getElementById('scroll-bottom').scrollLeft = this.scrollLeft">
+  
+  <table class="table table-sm table-bordered table-hover text-nowrap align-middle w-auto">
+      <thead class="table-primary sticky-top">
+        <tr>
+          <th style="min-width: 80px;">ID</th>
+          <th style="min-width: 100px;"><!-- Imagen --></th>
+          <th style="min-width: 180px;">Nombre completo</th>
+          <th style="min-width: 80px;"><!-- Edad --></th>
+          <th style="min-width: 100px;"><!-- Género --></th>
+          <th style="min-width: 200px;">Correo</th>
+          <th style="min-width: 150px;">Nombre de usuario</th>
+          <th style="min-width: 160px;"><!-- Contraseña --></th>
+          <th style="min-width: 100px;">Rol</th>
+          <th style="min-width: 120px;">Editar Rol</th>
+          <th style="min-width: 100px;">Guardar</th>
+          <th style="min-width: 100px;">Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of filteredUsers; track user.idUser) {
+          <tr>
+            <!-- ******************** input ID ******************** -->
+            <td>
+              <input 
+                type="number" 
+                class="form-control form-control-sm" 
+                [(ngModel)]="user.idUser"
+                [disabled]="user.username === 'admin-master'" />
+            </td>
+            
+            <!-- ******************** input imgUser ******************** -->
+            <td>
+
+              <div class="d-flex justify-content-center">
+              <!--  <img
+                  [src]="user.imgUser"
+                  class="img-thumbnail"
+                  [ngClass]="{'opacity-50': user.username === 'admin-master'}"                
+                  style="width: 40px; height: 40px; object-fit: cover;"
+                  alt="Foto del usuario" />
+              -->
+
+                <!-- ******************** Input de archivo + botón Editar ******************** -->
+              <!-- <input
+                  type="file"
+                  accept="image/*"
+                  #fileInput
+                  class="d-none"
+                  (change)="onImageChange(user, $event)"/>
+                <button                
+                  class="btn btn-sm btn-outline-secondary"
+                  [disabled]="user.username === 'admin-master'"
+                  (click)="fileInput.click()">
+                  Editar
+                </button>
+              -->
+              </div>
+            </td>
+
+            <!-- ******************** input name ******************** -->
+            <td>
+              <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.name"
+              [disabled]="user.username === 'admin-master'" />
+            </td>
+            
+            <!-- ******************** input age ******************** -->
+            <td>
+              <!-- <input
+              type="number"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.age"
+              [disabled]="user.username === 'admin-master'"
+              > -->
+            </td>
+
+            <!-- ******************** input gender ******************** -->
+            <td>
+              <!-- <select
+              class="form-control form-control-sm"
+              [(ngModel)]="user.gender"
+              [disabled]="user.username === 'admin-master'"
+              >
+              <option disabled selected value="">Selecciona...</option>             
+              <option value="male">Hombre</option>
+              <option value="female">Mujer</option>
+              </select> -->
+            </td>
+
+            <!-- ******************** input email ******************** -->
+            <td>
+              <input
+              type="email"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.email"
+              [disabled]="user.username === 'admin-master'">
+            </td>
+
+            <!-- ******************** input username ******************** -->
+            <td>
+              <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.username"
+              [disabled]="user.username === 'admin-master'">
+            </td>
+
+            <!-- ******************** input password ******************** -->
+            <td>
+              <!-- <input
+              type="password"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.password"
+              [disabled]="user.username === 'admin-master'"> -->
+            </td>
+
+            <!-- ******************** input role ******************** -->
+            <td>
+              <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.role"
+              [disabled]="user.username === 'admin-master'">
+            </td>
+
+            <!-- ******************** input editRole ******************** -->
+            <td>
+              <button class="btn btn-sm btn-warning"
+              (click)="toggleRole(user)"
+              [disabled]="user.username === 'admin-master'">
+                {{ user.admin ? 'Quitar Admin' : 'Acer Admin' }}
+              </button>
+            </td>
+
+            <!-- ******************** input save ******************** -->
+            <td>              
+              <button class="btn btn-sm btn-success"
+              (click)="updateUser(user)"
+              [disabled]="user.username === 'admin-master'">
+                Guardar
+              </button>
+            </td>
+
+            <!-- ******************** input delete ******************** -->
+            <td>
+              <button class="btn btn-sm btn-danger"
+              (click)="deleteUser(user.idUser)"
+              [disabled]="user.username === 'admin-master'">
+                Eliminar
+              </button>
+            </td>            
+          </tr>
+        }
+        @if (users.length === 0) {
+          <tr>
+            <td colspan="12">
+              <div class="p-2 bg-info bg-opacity-25 text-primary text-center rounded">
+                No hay usuarios registrados
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🔁 Scroll inferior sincronizado -->
+  <div 
+    id="scroll-bottom" 
+    class="mt-1"
+    style="overflow-x: auto;" 
+    onscroll="document.getElementById('scroll-wrapper').scrollLeft = this.scrollLeft">
+  </div>

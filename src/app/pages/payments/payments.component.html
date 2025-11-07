@@ -1,0 +1,56 @@
+<!-- src/app/payment/payment.component.ts -->
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Mis metodos de pago</h3>
+
+    <!-- Botones superiores -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 25px; padding-bottom: 25px;">
+        <button
+            class="btn btn-outline-primary btn-sm"
+            [routerLink]="['/perfilAdmin']"
+            routerLinkActive="router-link-active"
+            >Regresar al perfil</button>
+        <button
+            class="btn btn-outline-primary btn-sm"
+            [routerLink]="['/addPayments']"
+            routerLinkActive="router-link-active"
+            >Agregar método de pago</button>
+    </div>
+
+    <div *ngIf="(payments$ | async)?.length === 0" class="alert alert-info text-center">
+        No hay metodos de pago agregados.
+    </div>
+
+    <!-- Tarjetas tipo "renglón horizontal" -->
+    <ng-container *ngIf="( payments$ | async ) as addPayment">
+        <div class="row">
+            <div class="col-12 mb-2" *ngFor="let payment of payments$ | async; let i = index">
+                <div class="card shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+
+                    <!-- Información -->
+                    <div>
+                        <p>Alias: {{payment.alias}}</p>
+                        <p>Método de pago: {{payment.method}}</p>
+                        <p>Banco: {{payment.bank}}</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button
+                            class="btn btn-outline-warning btn-sm"
+                            [routerLink]="['/addPayments']"
+                            [state]="{ paymentToEdit: payment, editIndex: i }">
+                            Editar
+                        </button>
+                        <button                            
+                            class="btn btn-outline-danger btn-sm"
+                            (click)="onDeletePayment(i)">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    
+</div>
+
+
+

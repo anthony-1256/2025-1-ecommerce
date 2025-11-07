@@ -1,0 +1,87 @@
+<!-- src/pp/pages/form-addpayment/form-addpayment.component.html -->
+<div class="container mt-4">
+    <div
+        class="d-flex justify-content-center mt-4"
+        style="display: flex; justify-content: center; align-items: center; gap: 25px;">
+        <h4 class="text-center mb-4">
+            {{ paymentToEdit ? 'Editar método de pago' : 'Agregar nuevo método de pago' }}
+        </h4>
+    </div>
+
+    <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+
+        <!-- Método de pago -->
+        <div class="mb-3">
+
+            <label for="method" class="form-label">Método de pago</label>
+            <select            
+                id="method"
+                class="form-select"
+                formControlName="method"
+                (change)="paymentForm.get('bank')?.reset()">
+                <option value="">Selecciona un método</option>
+                <option *ngFor="let method of paymentMethods" [value]="method">
+                    {{ method }}
+                </option>
+            </select>
+        </div>
+
+        <!-- Banco (solo si aplica) -->
+        <div class="mb-3" *ngIf="requiresBank">
+            <label for="bank" class="form-label">Banco</label>
+            <select id="bank" class="form-select" formControlName="bank">
+                <option value="" disabled selected>Selecciona un banco</option>
+                <option *ngFor="let bank of bankOptions" [value]="bank">
+                    {{ bank }}
+                </option>
+            </select>
+        </div>
+
+        <!-- Alias -->
+        <div class="mb-3">
+            <label for="alias" class="form-label">Alias o referencia</label>
+            <input
+                type="text"
+                id="alias"
+                class="form-control"
+                formControlName="alias"
+                maxlength="50"
+                placeholder="Ej: Mi cuenta BBVA" />
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-center mt-4"
+            style="display: flex; justify-content: center; align-items: center; gap: 25px;">            
+            <button
+                class="btn btn-dark"
+                type="button"
+                (click)="goToPayments()">
+                Métodos de pago agregados
+            </button>
+            <button
+                class="btn btn-primary"
+                type="submit"
+                [disabled]="paymentForm.invalid">
+                Guardar método de pago
+            </button>
+            <button
+                class="btn btn-secondary"
+                type="button"
+                (click)="confirmCancel()"
+                [disabled]="!paymentForm.dirty">
+                Cancelar
+            </button>
+        </div>
+
+        <div class="mt-2" style="min-height: 1.5rem;">
+            <small
+                [ngClass]="{
+                    'text-center': isFormReady(),
+                    'text-danger': !isFormReady()
+                }">
+                {{ isFormReady() ? '✅' : '❌ Faltan datos obligatorios para enviar.' }}
+            </small>
+        </div>
+
+    </form>
+</div>

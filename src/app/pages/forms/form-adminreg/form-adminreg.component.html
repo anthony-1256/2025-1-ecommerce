@@ -1,0 +1,202 @@
+<!-- ***** src/app/pages/forms/form-adminreg/form-adminreg.component.ts ***** -->
+
+<div class="container-fluid px-0" style="max-width: 100%;">
+  <div class="row justify-content-center align-items-stretch g-0" style="min-height: 100vh;">
+    <!-- FORM -->
+    <form [formGroup]="form" (ngSubmit)="adminRegisterUser()" style="max-width: 1200px; width: 100%;">
+      <h3 class="text-center w-100 mb-2">Registro de Usuario</h3>
+      <div class="row">
+
+        <!-- Fila 1: Vista previa de la imagen y input -->
+        <label for="imgUser" class="form-label small w-100 text-start mb-1">Imagen de Usuario</label>
+        <div class="col-12 d-flex justify-content-start align-items-center py-2">
+          <!-- Vista previa -->
+          <div class="preview-container mb-2 me-3" style="min-width: 50px; min-height: 50px; display: flex; align-items: center; justify-content: center;">
+            <img *ngIf="imagePreview" [src]="imagePreview" alt="Vista previa de la imagen" width="50" height="50" style="object-fit: cover; border-radius: 0.5rem; border: 1px solid #ccc;">
+          </div>
+
+          <!-- Input imagen -->
+          <div class="flex-grow-1">
+            <input
+              type="file"
+              id="imgUser"
+              class="form-control form-control-sm"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              formControlName="imgUser"
+              style="max-width: 450px;"
+            />
+          </div>
+
+          <!-- Validación -->
+          <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+            <span *ngIf="form.get('imgUser')?.touched && form.get('imgUser')?.invalid">
+              * Imagen de usuario requerida
+            </span>
+          </div>
+        </div>
+
+        <!-- Fila 2: Nombre, Edad y Género -->
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between mb-3">
+          <div class="col-md-5 mb-2 mb-md-0">
+            <label for="name" class="form-label small">Nombre completo</label>
+            <input
+              type="text"
+              id="name"
+              class="form-control form-control-sm"
+              formControlName="name"
+              (blur)="nameTouched = true"
+              required
+              placeholder="Ingrese el nombre..."
+            />
+            <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+              <span *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+                * Nombre completo requerido
+              </span>
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-2 mb-md-0">
+            <label for="age" class="form-label small">Edad</label>
+            <input
+              type="number"
+              id="age"
+              class="form-control form-control-sm"
+              formControlName="age"
+              (blur)="ageTouched = true"
+              required
+              placeholder="Ingrese Edad valida..."
+            />
+            <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+              <span *ngIf="form.get('age')?.touched && form.get('age')?.invalid">
+                * Mayoría de edad requerida 
+              </span>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label for="gender" class="form-label small">Género</label>
+            <select
+              id="gender"
+              class="form-control form-control-sm"
+              formControlName="gender"
+              [class.is-invalid]="form.get('gender')?.touched && form.get('gender')?.invalid"
+            >
+              <option value="" selected>Seleccionar...</option>
+              <option [ngValue]="gender.male">Masculino</option>
+              <option [ngValue]="gender.female">Femenino</option>
+            </select>
+            <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+              <span *ngIf="form.get('gender')?.touched && form.get('gender')?.invalid">
+                * Género requerido
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fila 3: Correo, Usuario y Contraseña -->
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between mb-3">
+
+          <!-- Correo electrónico -->
+          <div class="col-md-5 mb-2 mb-md-0">
+            <label for="email" class="form-label small">Correo electrónico</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control form-control-sm"
+              formControlName="email"
+              (blur)="emailTouched = true"
+              autocomplete="new-password"
+              required
+              placeholder="Correo electrónico..."
+            />
+            <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+              <span *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+                * Correo electrónico requerido
+              </span>
+            </div>
+          </div>
+
+          <!-- Nombre de usuario -->
+          <div class="col-md-3 mb-2 mb-md-0">
+            <label for="username" class="form-label small">Nombre de usuario</label>
+            <input
+              type="text"
+              id="username"
+              class="form-control form-control-sm"
+              formControlName="username"
+              (blur)="usernameTouched = true"
+              autocomplete="new-password"
+              required
+              placeholder="Nombre de usuario aquí..."
+            />
+            <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+              <span *ngIf="form.get('username')?.touched && form.get('username')?.invalid">
+                * Usuario requerido
+              </span>
+            </div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="col-md-3">
+            <label class="form-label small d-flex align-items-center justify-content-between">
+              Contraseña
+              <i
+                [class.fas]="true"
+                [class.fa-eye]="!passwordVisible"
+                [class.fa-eye-slash]="passwordVisible"
+                style="top:38px; right: 10px; cursor: pointer;"
+                (click)="togglePasswordVisibility()">
+              </i>
+            </label>
+            <input
+              [type]="passwordVisible ? 'text' : 'password'"
+              id="password"
+              class="form-control form-control-sm"
+              formControlName="password"
+              (blur)="passwordTouched = true"
+              autocomplete="off"
+              required
+              minlength="8"
+              placeholder="Ingresa una contraseña..."
+            />
+            <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+              <span *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+                * Mínimo 8 caracteres
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Fila 4: Botones -->
+        <div class="col-12 d-flex justify-content-between mt-3" style="margin-bottom: 0;">
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="!form.valid">
+            Registrar usuario
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            (click)="confirmCancel()"
+            [disabled]="!form.dirty">
+            Cancelar
+          </button>
+        </div>
+
+        <!-- Mensaje estado de formulario -->
+        <div class="text-danger small mt-1" style="min-height: 1.25rem;">
+          <small
+            [ngClass]="{
+              'text-success' : isFormReady(),
+              'text-danger' : !isFormReady()
+            }">
+            {{ isFormReady() ? '✅' : '❌ Faltan datos obligatorios para enviar.' }}
+          </small>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

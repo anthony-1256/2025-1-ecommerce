@@ -1,0 +1,73 @@
+<!-- contenedor principal -->
+<div class="container mt-4">
+
+    <!-- título -->
+    <h3 class="text-center mb-4">Mis productos favoritos</h3>
+
+    <!-- botones de navegación -->
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
+        <button class="btn btn-outline-primary btn-sm" [routerLink]="['/perfilAdmin']">Regresar al perfil</button>
+        <button class="btn btn-outline-secondary btn-sm" [routerLink]="['/productos']">Ir a productos</button>
+        <button class="btn btn-outline-success btn-sm" [routerLink]="['/carrito']">Ir a carrito de compra</button>
+    </div>
+
+    <!-- mensaje si no hay favoritos -->
+    <ng-container *ngIf="(enrichedFavorites$ | async) as favorites">
+        <div *ngIf="favorites.length === 0" class="alert alert-info text-center">
+            No tienes productos favoritos aún.
+        </div>
+
+        <div *ngIf="favorites.length > 0" class="d-flex justify-content-center mb-3">
+            <button class="btn btn-danger btn-lg" (click)="deleteAllFavoritesByUser()">
+                <i class="bi bi-trash-fill"></i> Eliminar todos los favoritos
+            </button>
+        </div>
+
+        <!-- listado de productos favoritos -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+
+            <div class="col" *ngFor="let fav of favorites">
+                <div class="card h-100 position-relative border overflow-hidden"
+                    style="
+                        border-radius: 1.5rem; 
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.15); 
+                        transition: box-shadow 0.3s ease;
+                    ">
+
+                    <!-- badge de descuento -->
+                    <span *ngIf="fav.hasDiscount && fav.lastPrice as lastPrice" 
+                        class="badge bg-danger position-absolute top-0 start-0 m-2 fs-5 p-2" 
+                        style="border: 2px solid white;">
+                        -{{ ((lastPrice - fav.price) / lastPrice * 100) | number:'1.0-0' }}%
+                    </span>
+
+                    <!-- botón corazón (eliminar favorito) -->
+                    <button type="button"
+                        class="btn btn-danger rounded-circle position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center"
+                        style="width: 55px; height: 55px; font-size: 1.8rem; z-index: 30; pointer-events: auto;"
+                        (click)="$event.stopPropagation(); deleteFavoriteByUser(fav)">
+                        <i class="bi bi-heart-fill"></i>
+                    </button>
+
+                    <!-- botón ver detalles -->
+                    <button type="button"
+                        class="btn btn-primary position-absolute bottom-0 end-0 m-2 d-flex align-items-center justify-content-center"
+                        style="font-size: 1.4rem; padding: 0.6rem 1rem; z-index: 30; pointer-events: auto;"
+                        (click)="$event.stopPropagation(); onViewDetails(fav)">
+                        <i class="bi bi-eye"></i>
+                    </button>
+
+                    <!-- imagen del producto -->
+                    <img [src]="fav.image" class="card-img-top" alt="Producto favorito"
+                        style="object-fit: cover; height: 200px; pointer-events: none; border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem;">
+
+                    <!-- cuerpo del card -->
+                    <div class="card-body text-center py-3">
+                        <h5 class="card-title fw-bold">{{ fav.name }}</h5>
+                        <p class="card-text fs-2 fw-bold text-success">{{ fav.price | currency }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>

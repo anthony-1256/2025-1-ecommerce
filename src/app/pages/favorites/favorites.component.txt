@@ -1,0 +1,170 @@
+/***** src/app/pages/favorites/favorites.component.ts *****/
+import { Component, OnInit } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { Favorite } from '../../core/models/favorites.model';
+import { FavoritesService } from '../../core/services/favorites.service';
+import { CommonModule } from '@angular/common';
+import { CartService } from '../../core/services/cart.service';
+import Swal from 'sweetalert2';
+import { Product } from '../../core/models/product.model';
+import { Brand, ProductCategory, Capacity, Speed } from '../../core/types/enums';
+import { RouterLink } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
+
+@Component({
+  selector: 'app-favorites',
+  standalone: true,
+  imports: [ CommonModule, RouterLink ],
+  templateUrl: './favorites.component.html',
+  styleUrl: './favorites.component.css'
+})
+export class FavoritesComponent implements OnInit {
+
+  /* ob: favoritos del usuario actual */
+  favorites$!: Observable<Favorite[]>;
+  tempQuantities: { [key: string]: number } = {};
+
+  /* ob: clave de favoritos en localStorage */
+  private storageKey: string = 'userFavorites';
+
+  constructor(
+    private favoritesService: FavoritesService,
+    private cartService: CartService,
+    private authService: AuthService,
+  ) {}
+
+  ngOnInit(): void {
+    
+    const currentUser = this.authService.getCurrentUser();
+
+    if (!currentUser) {
+      this.favorites$ = of([]);
+      return;
+    }
+
+    this.favorites$ = this.favoritesService.favorites$.pipe(
+      map(entries => {
+
+        const entry = entries.find(e => e.idUser === currentUser.idUser);
+        return entry ? [...entry.favorites] : [];
+      })
+    );
+
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'userFavorites') {
+        const stored = event.newValue ? JSON.parse(event.newValue) : [];
+
+        this.favoritesService['userFavorites'] = stored;
+        this.favoritesService['favoritesSubject'].next(stored);
+      }
+    });
+  }
+
+  onDeleteFavorite(index: number): void {
+    const currentUser = this.favoritesService['authService'].getCurrentUser();
+    if (!currentUser) return;
+
+    this.favoritesService.deleteFavoriteForUser(currentUser.idUser, index);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Eliminado de favoritos',
+      text: 'El producto fue removido correctamente.',
+      showConfirmButton: true
+    });
+  }
+
+  onBuyNow(fav: Favorite): void {
+    Swal.fire('Por implementar');
+  }
+
+  onViewDetails(fav: Favorite): void {
+    Swal.fire('Por implementar');
+  }
+
+  /* mt: agregar producto al carrito según cantidad elegida */
+  onAddToCart( fav: Favorite ): void {
+
+    const productToAdd: Product = {
+      idProduct: fav.idProduct,
+      productName: fav.name,
+      imgProduct: fav.image,
+      price: fav.price,
+      brand:  { idBrand: 0, name:'Otra', logo: '' },
+      model: '',
+      description: '',
+      category: ProductCategory.other,
+      capacity: Capacity.Other,
+      speed: Speed.Other,
+      sku: '',
+      quantity: 1,
+      available: false
+    };
+    
+    /* Obtener la cantidad seleccionada en la tarjeta del producto */
+    const quantityToAdd = this.tempQuantities[fav.idProduct] || 1;
+
+    /* Llamada al método del servicio tantas veces com unidades se quieran agregar  */
+    for (let i = 0; i < quantityToAdd; i++) {
+      this.cartService.addToCart(productToAdd);
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Producto agregado al carrito',
+      text: `${quantityToAdd} unidad(es) de ${productToAdd.productName} agregado(s).`,
+      showConfirmButton: true
+    });
+  }
+
+}
+
+<!-- src/app/pages/favorites/favorites.component.html -->
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Mis productos favoritos</h3>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 25px; padding-bottom: 25px;">
+        <button
+            class="btn btn-outline-primary btn-sm"
+            [routerLink]="['/perfilAdmin']" routerLinkActive="router-link-active"
+            >Regresar al perfil</button>
+        <button
+            class="btn btn-outline-secondary btn-sm"
+            [routerLink]="['/productos']"
+            >Ir a productos</button>
+        <button
+            class="btn btn-outline-success btn-sm"
+            [routerLink]="['/carrito']">Ir a carrito de compra</button>
+    </div>
+
+    <div *ngIf="(favorites$ | async)?.length === 0" class="alert alert-info text-center">
+        No tienes productos favoritos aún.
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" *ngIf="( favorites$ | async ) as favorites">
+        <div class="col" *ngFor="let fav of favorites; let i = index">
+            <div class="card h-100 shadow-sm">
+                <img [src]="fav.image" class="card-img-top" alt="Producto favorito" style="object-fit: cover; height: 150px;" />
+                <div class="card-body">
+                    <h5 class="card-title"> {{fav.name}} </h5>
+                    <p class="card-text"> {{fav.price | currency}}</p>
+                </div>
+                <div class="d-flex justify-content-between p-2">
+                    <button class="btn btn-outline-primary btn-sm" (click)="onViewDetails(fav)">
+                        Ver detalles
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" (click)="onBuyNow(fav)">
+                        Comprar ahora.
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" (click)="onAddToCart(fav)">
+                        Agregar a carrito.
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" (click)="onDeleteFavorite(i)">
+                        Eliminar de favoritos.
+                    </button>
+                </div>
+            </div>            
+        </div>        
+    </div>
+    
+</div>

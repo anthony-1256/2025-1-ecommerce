@@ -1,0 +1,127 @@
+<!-- ***** src/app/pages/cards-group/cards-group.component.html ***** -->
+<div class="container py-3">
+
+  <!-- Loader mientras isLoading es true -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <i class="fa-solid fa-spinner fa-spin fa-3x text-primary"></i>
+    <p class="mt-2">Cargando productos...</p>
+  </div>
+
+  <!-- Productos visibles -->
+  <div *ngIf="!isLoading" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    @for(p of visibleProducts; track p) {
+
+      <div class="col">
+        <div class="card h-100 shadow-sm position-relative p-2">
+
+          <!-- 🎯 Badge de descuento individual -->
+          <span *ngIf="pricesService.getLastPrice(p.idProduct) as lastPrice"
+                class="badge bg-danger position-absolute top-0 start-0 m-2 fs-5 p-2"
+                style="border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2;">
+            -{{ ((lastPrice - p.price) / lastPrice * 100) | number:'1.0-0' }}%
+          </span>
+
+          <!-- 🖼 Imagen del producto con botones sobre ella -->
+          <div class="position-relative">
+            <img [src]="p.imgProduct"
+                alt="Imagen del producto"
+                class="card-img-top"
+                style="object-fit: cover; height: 120px;"> <!-- altura reducida -->
+
+            <!-- 🔘 Botones sobre la imagen en las orillas -->
+            <div class="position-absolute w-100 px-2 d-flex justify-content-between" style="bottom: 5px; z-index: 3;">
+              <!-- Favoritos -->
+              <button 
+                class="btn btn-sm d-flex align-items-center justify-content-center"
+                (click)="onToggleFavorite(p)"
+                [attr.aria-pressed]="isFavorite(p)"
+                [title]="isFavorite(p) ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+                style="width: 38px; height: 38px; border-radius: 50%; background-color: rgba(255,255,255,0.9); box-shadow: 0 0 4px rgba(0,0,0,0.2);">
+                <i 
+                  class="fa-solid fa-heart"
+                  [ngClass]="isFavorite(p) ? 'text-danger' : 'text-secondary'"
+                  style="font-size: 20px;">
+                </i>
+              </button>
+
+              <!-- Ver detalles -->
+              <button 
+                class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+                [routerLink]="['/detalles', p.idProduct]"
+                title="Ver detalles"
+                style="width: 38px; height: 38px; border-radius: 50%; font-size: 18px; background-color: rgba(255,255,255,0.95);">
+                👁️‍🗨️
+              </button>
+            </div>
+          </div>
+
+          <!-- 📦 Contenido del producto -->
+          <div class="card-body d-flex flex-column p-2">
+
+            <!-- 🏷 Título con altura fija -->
+            <h6 class="card-title mb-1" style="height: 36px; overflow: hidden;">
+              {{ p.productName }}
+            </h6>
+            
+            <!-- 📃 Descripción de producto: un renglón con ... -->
+            <p class="card-text small mb-2"
+              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ p.description }}
+            </p>
+
+            <!-- Disponibles y ajuste de cantidades lado a lado -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted">Disponibles: {{ p.quantity }}</small>
+              <div class="d-flex gap-1">
+                <button (click)="decreaseQuantity(p)" class="btn btn-outline-secondary btn-sm rounded-circle" style="width: 32px; height: 32px;">-</button>
+                <span class="px-2">{{ tempQuantities[p.idProduct] || 1 }}</span>
+                <button (click)="increaseQuantity(p)" class="btn btn-outline-secondary btn-sm rounded-circle" style="width: 32px; height: 32px;">+</button>
+              </div>
+            </div>
+
+            <!-- Precios -->
+            <div class="mb-1">
+              <p *ngIf="pricesService.getLastPrice(p.idProduct) as lastPrice" class="mb-0" style="font-size: 12px;">
+                Desde 
+                <span class="text-decoration-line-through me-2 text-danger">
+                  {{ lastPrice | currency: 'MXN' }}
+                </span>
+              </p>
+              <p class="card-text fw-bold mb-0" style="font-size: 16px; line-height: 1.1;">
+                A tan solo:
+                <small class="fw-bold text-success" style="font-size: 18px;">
+                  {{ p.price | currency: 'MXN' }}
+                </small>
+              </p>
+              <p class="card-text text-end mb-0 mt-0" style="font-size: 28px; line-height: 1.1;">
+                <small class="text-muted">
+                  Total: {{ getTotal(p) | currency: 'MXN' }}
+                </small>
+              </p>
+            </div>
+
+          </div> <!-- fin .card-body -->
+
+          <!-- 🟢 Botones inferiores (Comprar ahora y Agregar al carrito) con padding vertical reducido -->
+          <div class="d-flex justify-content-between mt-2 gap-2">
+            <button 
+              class="btn btn-warning flex-fill d-flex align-items-center justify-content-center py-1"
+              (click)="onBuyNow(p)"
+              style="font-weight: 600; font-size: 12px;">
+              ⚡ Compralo ahora
+            </button>          
+            <button 
+              class="btn btn-success flex-fill d-flex align-items-center justify-content-center py-1"
+              (click)="onAddToCart(p)"
+              title="Agregar al carrito"
+              style="font-weight: 600; font-size: 12px;">
+              🛒 Agregalo a tu carrito
+            </button>
+          </div>
+
+        </div> <!-- fin .card -->
+      </div> <!-- fin .col -->
+
+    }
+  </div> <!-- fin .row -->
+</div> <!-- fin .container -->

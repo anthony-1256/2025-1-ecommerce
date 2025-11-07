@@ -1,0 +1,4 @@
+.btn-zoom:hover {
+    cursor: pointer;
+    transform: scale(2);
+}

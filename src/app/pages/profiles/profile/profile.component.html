@@ -1,0 +1,124 @@
+<!-- profile.component.html -->
+<div class="container mt-4" style="padding: 15px; border: 1px solid #87CEEB; border-radius: 10px;">
+
+    <div class="row">
+
+        <!-- Columna izquierda -->
+        <div class="col-md-3 text-center">
+
+            <!-- Foto editable -->
+            <img
+                [src]="currentUser?.imgUser"
+                alt="Foto perfil {{ currentUser?.username }}"
+                class="img-fluid rounded-circle mb-3"
+                style="max-width: 150px; height: auto;" />
+                <p class="mt-2 fw-bold">{{ currentUser?.name || 'Usuario' }}</p>
+                <small class="text-muted">{{ currentUser?.role || 'Usuario' }}</small>
+        </div>
+
+        <!-- Columna central: Menú de opciones -->
+        <div class="col-md-3" style="padding: 15px; border: 1px solid #87CEEB; border-radius: 10px;">
+            <div class="list-group">
+
+                <!-- Menú de opciones -->
+                <nav class="nav flex-column">
+                    <button
+                        class="btn btn-outline-primary mb-2 text-start"
+                        [class.active]="activeSection === 'personalData'"
+                        (click)="setActiveSection('personalData')"
+                        >
+                        Datos personales
+                    </button>
+                    <button
+                        class="btn btn-outline-primary mb-2 text-start"
+                        [class.active]="activeSection === 'addresses'"
+                        (click)="setActiveSection('addresses')"
+                        >
+                        Direcciones
+                    </button>
+                    <button
+                        class="btn btn-outline-primary mb-2 text-start"
+                        [class.active]="activeSection === 'paymentMethods'"
+                        (click)="setActiveSection('paymentMethods')"
+                        >
+                        Métodos de pago
+                    </button>
+                    <button
+                        class="btn btn-outline-primary mb-2 text-start"
+                        [class.active]="activeSection === 'purchaseHistory'"
+                        (click)="setActiveSection('purchaseHistory')"
+                        >
+                        Historial de compras
+                    </button>
+                    <button
+                        class="btn btn-outline-primary mb-2 text-start"
+                        [class.active]="activeSection === 'currentCart'"
+                        (click)="setActiveSection('currentCart')"
+                        >
+                        Carrito actual
+                    </button>
+                    <button
+                        class="btn btn-outline-primary mb-2 text-start"
+                        [class.active]="activeSection === 'favorites'"
+                        (click)="setActiveSection('favorites')"
+                        >
+                        Favoritos
+                    </button>                    
+                </nav>
+            </div>
+        </div>    
+
+        <!-- Columna derecha: contenido dinámico -->
+        <div class="col-md-6">
+
+            <div *ngIf="activeSection === 'personalData'">
+                <h3>Datos personales</h3>
+                <p>Edita tus datos personales.</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                    <button [routerLink]="['/updateUser']">Ver y Actualizar información de usuario</button>
+                </div>
+            </div>
+
+            <div *ngIf="activeSection === 'addresses'">
+                <h3>Direcciones</h3>
+                <p>Gestiona tus direcciones de entrega.</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                    <button [routerLink]="['/direcciones']">Ver direcciones</button>
+                </div>
+            </div>
+
+            <div *ngIf="activeSection === 'paymentMethods'">
+                <h3>Métodos de pago</h3>
+                <p>Gestiona tus métodos de pago.</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                <button [routerLink]="['/pagos']">Ver métodos de pago</button>
+                </div>
+            </div>
+
+            <div *ngIf="activeSection === 'purchaseHistory'">
+                <h3>Historial de compras</h3>
+                <p>Revisa tus compras anteriores.</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                <button [routerLink]="['/compras']">Historial de compras</button>
+                </div>
+            </div>
+
+            <div *ngIf="activeSection === 'currentCart'">
+                <h3>Carrito actual</h3>
+                <p>Revisa y edita tu carrito actual.</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                <button [routerLink]="['/carrito']">Ver carrito de compras</button>
+                </div>
+            </div>
+
+            <div *ngIf="activeSection === 'favorites'">
+                <h3>Favoritos</h3>
+                <p>Gestiona tus productos favoritos.</p>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                <button [routerLink]="['/favoritos']">Ver lista de favoritos</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

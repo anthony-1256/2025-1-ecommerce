@@ -1,0 +1,314 @@
+<!-- ***** src/app/pages/forms/form-addproduct/form-addproduct.component.html ***** -->
+<div class="container-fluid px-0">
+  
+  <div class="row justify-content-center g-0">
+    
+    <!-- FORM -->
+    <form [formGroup]="form" (ngSubmit)="adminRegisterProduct()" style="max-width: 1800px; width: 100%;">
+      <!-- Fila principal -->
+      <div class="row g-3">
+
+        <!-- Columna imagen -->
+        <div class="col-md-4">
+          <label for="imgProduct" class="form-label small">Imagen de producto:</label>
+
+          <!-- Contenedor centrado -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 1rem;">
+
+            <!-- Input -->
+            <!-- Input SIN formControlName -->
+            <input
+              type="file"
+              id="imgProduct"
+              class="form-control form-control-sm"
+              formControlName="imgProduct"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              style="max-width: 450px;" />
+            <!-- Vista previa reservando altura -->
+            <div
+              style="width: 300px; height: 200px; border: 1px solid #ccc; border-radius: 0.5rem; overflow: hidden; background-color: #f9f9f9; display: flex; justify-content: center; align-items: center;">
+              
+              @if (imagePreview) {
+                <img
+                  *ngIf="imagePreview"
+                  [src]="imagePreview"
+                  alt="Vista previa del producto"
+                  style="width: 100%; height: 100%; object-fit: contain;" />
+              } @else {
+                <!-- Validación manual basada en touched + !value -->
+                <div class="text-danger small mt-1"
+                  style="height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                  <span *ngIf="form.get('imgProduct')?.touched && !form.get('imgProduct')?.value">
+                    * Imagen requerida.
+                  </span>
+                </div>
+              }
+
+            </div>
+
+          </div>
+        </div>
+
+        
+        <!-- Columna formulario -->
+        <div class="col-md-8">
+
+          <!-- row - productName, brand -->
+          <div class="row g-2">
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="productName" class="form-label small">Nombre de producto:</label>
+              <input
+                type="text"
+                id="productName"
+                class="form-control form-control-sm"
+                formControlName="productName"
+                required
+                placeholder="Ej: Disco Externo..." />
+              <div class="text-danger small mt-1"
+                style="height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('productName')?.touched && form.get('productName')?.invalid">
+                  * Nombre requerido.
+                </span>
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="sku" class="form-label small">SKU:</label>
+              <input
+                type="text"
+                id="sku"
+                class="form-control form-control-sm"
+                formControlName="sku"
+                required
+                placeholder="Código de producto..." />
+              <div class="text-danger small mt-1"
+                style="height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('sku')?.touched && form.get('sku')?.invalid">
+                  * SKU requerido.
+                </span>
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="model" class="form-label small">Modelo:</label>
+              <input
+                type="text"
+                id="model"
+                class="form-control form-control-sm"
+                formControlName="model"
+                required
+                placeholder="Modelo del producto..." />
+              <div class="text-danger small mt-1"
+                style="height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('model')?.touched && form.get('model')?.invalid">
+                  * Modelo requerido.
+                </span>
+              </div>
+            </div>            
+          </div>
+
+          <!-- row - category, capacity, speed -->
+          <div class="row g-3">
+            <!--  -->
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="category" class="form-label small">Categoria</label>
+              <select class="form-control form-control-sm"
+                formControlName="category">
+
+                <option value="" disabled selected>Selecciona...</option>
+                @for (option of categoryOptions; track option ) {
+                  <option [value]="option">{{option}}</option>
+                }
+              </select>
+              <div
+                class="col-md-3 mb-2 mb-md-0 text-danger small mt-1"
+                style="width: auto; height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('category')?.touched && form.get('category')?.invalid">
+                  * Categoría requerida.
+                </span>
+              </div>
+            </div>
+
+            <!-- Capacity -->
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="capacity" class="form-label small">Capacidad:</label>
+              <select class="form-control form-control-sm"
+                formControlName="capacity">
+
+                <option value="" disabled selected>Selecciona...</option>
+                @for (option of capacityOptions; track option ) {
+                  <option [value]="option">{{option}}</option>
+                }
+              </select>
+              <div
+              class="col-md-3 mb-2 mb-md-0 text-danger small mt-1"
+                style="width: auto; height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('capacity')?.touched && form.get('capacity')?.invalid">
+                  * Capacidad requerida.
+                </span>
+              </div>
+            </div>
+
+            <!-- Speed -->
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="speed" class="form-label small">Velocidad:</label>
+              <select class="form-control form-control-sm"
+                formControlName="speed">
+
+                <option value="" disabled selected>Selecciona...</option>
+                @for (option of speedOptions; track option ) {
+                  <option [value]="option">{{option}}</option>
+                }
+              </select>
+              <div
+                class="col-md-3 mb-2 mb-md-0 text-danger small mt-1"
+                style="width: auto; height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('speed')?.touched && form.get('speed')?.invalid">
+                  * Velocidad requerida.
+                </span>
+              </div>
+            </div>
+          </div>          
+          
+          <!-- capacity, speed, Price, Quantity -->
+          <div class="row g-3">
+
+            <!-- Brand -->
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="brand" class="form-label small">Marca:</label>
+              <select class="form-control form-control-sm"
+                formControlName="brand">
+
+                <option value="" disabled>Selecciona...</option>
+                <option *ngFor="let option of brandOptions" [ngValue]="option" >
+                  {{option.name}}
+                </option>                
+              </select>
+              
+              <div
+                class="col-md-3 mb-2 mb-md-0 text-danger small mt-1"
+                style="width: auto; height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('brand')?.touched && form.get('brand')?.invalid">
+                  * Marca requerida.
+                </span>
+              </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="quantity" class="form-label small">Cantidad:</label>
+              <input
+                type="number"
+                formControlName="quantity"
+                (input)="updateAvailability()"
+                (blur)="updateAvailability()"
+                id="quantity"
+                class="form-control form-control-sm"                
+                required
+                min="0"
+                placeholder="Cantidad del producto..."/>
+              <div
+                class="col-md-3 mb-2 mb-md-0 text-danger small mt-1"
+                style="width: auto; height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('quantity')?.touched && form.get('quantity')?.errors?.['required']">
+                  * Cantidad requerida.
+                </span>
+                <span *ngIf="form.get('quantity')?.touched && form.get('quantity')?.errors?.['min']">
+                  * La cantidad no puede ser negativa.
+                </span>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="col-md-4 mb-2 mb-md-0">
+              <label for="price" class="form-label small">Precio</label>
+              <input
+                type="number"
+                id="price"
+                class="form-control form-control-sm"
+                formControlName="price"
+                required
+                min="0"
+                placeholder="Precio del producto..."/>
+              <div
+                class="col-md-3 mb-2 mb-md-0 text-danger small mt-1"
+                style="width: auto; height: 1.5rem; display: flex; justify-content: center; align-items: center;">
+                <span *ngIf="form.get('price')?.touched && form.get('price')?.invalid">
+                  * Precio requerido.
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Description, Buttons -->
+          <div class="row g-3">
+            
+            <div class="col-md-8 d-flex flex-column align-items-start" >
+              <label for="description" class="form-label small">Descripción:</label>
+              <textarea
+                id="description"
+                class="form-control form-control-sm"
+                formControlName="description"
+                rows="2"
+
+                placeholder="Descripción del producto..."></textarea>
+              <div
+                class="col-md-3 mb-2 mb-md-0 text-danger small mt-1"
+                style="width: auto; height: 1.5rem; display: flex; justify-content: center; align-items: center;">                        
+                <span *ngIf="form.get('description')?.touched && form.get('description')?.errors?.['required']">
+                  * La descripción es obligatoria.
+                </span>
+                <span *ngIf="form.get('description')?.touched && form.get('description')?.errors?.['minlength']">
+                  * Mínimo 10 caracteres.
+                </span>
+              </div>
+            </div>
+
+            <!-- Available -->
+            <div class="col-md-4 d-flex flex-column align-items-start" >
+              <label for="available" class="form-label small me-2">Disponibilidad:</label>
+              <div class="form-check mb-2 mb-md-0 d-flex align-items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="available"
+                  class="form-check-input"
+                  formControlName="available"
+                  [checked]="form.get('available')?.value">
+                <label class="form-check-label small">
+                  {{ quantityStatusMessage }}
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Fila secundaria -->
+      <div class="row mt-3">
+        
+        <!-- Columna botones -->
+        <div class="col-md-12 d-flex justify-content-center align-items-center gap-5">
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="!form.valid">
+            Agregar Producto
+          </button>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            (click)="confirmCancel()"
+            [disabled]="!form.dirty">
+            Canelar
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+  
+</div>

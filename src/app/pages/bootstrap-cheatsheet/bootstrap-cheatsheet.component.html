@@ -1,0 +1,226 @@
+<!-- src/app/components/bootstrap-cheatsheet/bootstrap-cheatsheet.component.html -->
+<div class="container my-4">
+    <div class="row">
+
+        <!-- Izquierda  -->
+        <aside class="col-md-4 col-lg-3">
+            <h5 class="mb-3 text-center">Utilidades de Bootstrap</h5>
+            <div class="sticky-top bg-light p-3 rounded shadow-sm" style="font-size: 12px; top: 80px; max-height: 90vh; overflow-y: auto;">
+
+                <!-- Espaciado (margin & padding) -->
+                <h6 class="text-primary text-center">Espaciado (margin & padding)</h6>
+                <table class="table table-sm table-bordered table-striped mb-4">
+                <thead class="table-dark text-center">
+                    <tr>
+                    <th>Clase</th>
+                    <th>Significado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>m-3</code></td><td>Margen en todos los lados</td></tr>
+                    <tr><td><code>mt-2</code></td><td>Margen arriba (top)</td></tr>
+                    <tr><td><code>mb-3</code></td><td>Margen abajo (bottom)</td></tr>
+                    <tr><td><code>mb-4</code></td><td>Margen abajo (bottom)</td></tr>
+                    <tr><td><code>ms-1</code></td><td>Margen a la izquierda (start)</td></tr>
+                    <tr><td><code>me-1</code></td><td>Margen a la derecha (end)</td></tr>
+                    <tr><td><code>mx-2</code></td><td>Margen horizontal (izquierda y derecha)</td></tr>
+                    <tr><td><code>my-2</code></td><td>Margen vertical (arriba y abajo)</td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td><code>p-2</code></td><td>Padding en todos los lados</td></tr>
+                    <tr><td><code>p-3</code></td><td>Padding en todos los lados</td></tr>
+                    <tr><td><code>pt-2</code></td><td>Padding arriba (top)</td></tr>
+                    <tr><td><code>pb-2</code></td><td>Padding abajo (bottom)</td></tr>
+                    <tr><td><code>ps-2</code></td><td>Padding a la izquierda (start)</td></tr>
+                    <tr><td><code>pe-2</code></td><td>Padding a la derecha (end)</td></tr>
+                    <tr><td><code>px-2</code></td><td>Padding horizontal (izquierda y derecha)</td></tr>
+                    <tr><td><code>py-2</code></td><td>Padding vertical (arriba y abajo)</td></tr>
+                </tbody>
+                </table>
+
+                <!-- Alineación de texto -->
+                <h6 class="text-primary text-center">Alineación de texto</h6>
+                <table class="table table-sm table-bordered table-striped mb-4">
+                <thead class="table-dark text-center">
+                    <tr>
+                    <th>Clase</th>
+                    <th>Significado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>text-start</code></td><td>Alinea texto a la izquierda</td></tr>
+                    <tr><td><code>text-center</code></td><td>Alinea texto al centro</td></tr>
+                    <tr><td><code>text-end</code></td><td>Alinea texto a la derecha</td></tr>
+                </tbody>
+                </table>
+
+                <!-- Flexbox -->
+                <h6 class="text-primary text-center">Flexbox (Diseño flexible)</h6>
+                <table class="table table-sm table-bordered table-striped mb-4">
+                <thead class="table-dark text-center">
+                    <tr>
+                    <th>Clase</th>
+                    <th>Significado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>d-flex</code></td><td>Define un contenedor flex</td></tr>
+                    <tr><td><code>justify-content-between</code></td><td>Distribuye hijos con espacio entre ellos</td></tr>
+                    <tr><td><code>justify-content-around</code></td><td>Distribuye hijos con espacio alrededor</td></tr>
+                    <tr><td><code>align-items-center</code></td><td>Alinea hijos verticalmente al centro</td></tr>
+                </tbody>
+                </table>
+
+                <!-- Grid system -->
+                <h6 class="text-primary text-center">Sistema de columnas (Grid)</h6>
+                <table class="table table-sm table-bordered table-striped mb-4">
+                <thead class="table-dark text-center">
+                    <tr>
+                    <th>Clase</th>
+                    <th>Significado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>row</code></td><td>Contenedor fila para columnas</td></tr>
+                    <tr><td><code>col-md-3</code></td><td>Columna de ancho 3/12 en pantallas medianas o más grandes</td></tr>
+                    <tr><td><code>col-md-4</code></td><td>Columna de ancho 4/12 en pantallas medianas o más grandes</td></tr>
+                    <tr><td><code>col-md-5</code></td><td>Columna de ancho 5/12 en pantallas medianas o más grandes</td></tr>
+                </tbody>
+                </table>
+
+                <!-- Sombras y bordes -->
+                <h6 class="text-primary text-center">Sombras y bordes</h6>
+                <table class="table table-sm table-bordered table-striped mb-4">
+                <thead class="table-dark text-center">
+                    <tr>
+                    <th>Clase</th>
+                    <th>Significado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>shadow-sm</code></td><td>Sombra pequeña</td></tr>
+                    <tr><td><code>shadow</code></td><td>Sombra estándar</td></tr>
+                    <tr><td><code>shadow-lg</code></td><td>Sombra grande</td></tr>
+                    <tr><td><code>border</code></td><td>Borde simple</td></tr>
+                    <tr><td><code>border-primary</code></td><td>Borde con color primario</td></tr>
+                    <tr><td><code>border-danger</code></td><td>Borde con color peligro (rojo)</td></tr>
+                    <tr><td><code>border-3</code></td><td>Ancho de borde: 3px</td></tr>
+                    <tr><td><code>rounded</code></td><td>Bordes redondeados</td></tr>
+                </tbody>
+                </table>
+
+                <!-- Botones -->
+                <h6 class="text-primary text-center">Botones</h6>
+                <table class="table table-sm table-bordered table-striped mb-4">
+                <thead class="table-dark text-center">
+                    <tr>
+                    <th>Clase</th>
+                    <th>Significado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>btn</code></td><td>Clase base para botones Bootstrap</td></tr>
+                    <tr><td><code>btn-primary</code></td><td>Botón con estilo primario azul</td></tr>
+                    <tr><td><code>btn-secondary</code></td><td>Botón con estilo secundario gris</td></tr>
+                    <tr><td><code>btn-success</code></td><td>Botón verde para acciones exitosas</td></tr>
+                    <tr><td><code>btn-danger</code></td><td>Botón rojo para acciones de peligro</td></tr>
+                    <tr><td><code>btn-warning</code></td><td>Botón amarillo para advertencias</td></tr>
+                    <tr><td><code>btn-info</code></td><td>Botón azul claro informativo</td></tr>
+                    <tr><td><code>btn-light</code></td><td>Botón con fondo claro</td></tr>
+                    <tr><td><code>btn-dark</code></td><td>Botón con fondo oscuro</td></tr>
+                    <tr><td><code>btn-link</code></td><td>Botón estilo enlace</td></tr>
+                </tbody>
+                </table>
+            </div>
+        </aside>
+
+
+        <main class="col-md-8 col-lg-9">
+
+            <h2 class="text-center mb-4">Guía rápida de estilos Bootstrap</h2>
+
+            <!-- BOTONES -->
+            <section class="mb-5">
+                <h4 class="mb-3">Botones</h4>
+                <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-primary">btn btn-primary</button>
+                <button class="btn btn-secondary">btn btn-secondary</button>
+                <button class="btn btn-success">btn btn-success</button>
+                <button class="btn btn-danger">btn btn-danger</button>
+                <button class="btn btn-warning">btn btn-warning</button>
+                <button class="btn btn-info">btn btn-info</button>
+                <button class="btn btn-light">btn btn-light</button>
+                <button class="btn btn-dark">btn btn-dark</button>
+                <button class="btn btn-link">btn btn-link</button>
+                </div>
+            </section>
+
+            <!-- ALINEACIÓN -->
+            <section class="mb-5">
+                <h4 class="mb-3">Alineación</h4>
+                <div class="border p-3 mb-3 text-start">border p-3 mb-3 text-start</div>
+                <div class="border p-3 mb-3 text-center">border p-3 mb-3 text-center</div>
+                <div class="border p-3 mb-3 text-end">border p-3 mb-3 text-end</div>
+
+                <div class="d-flex justify-content-between border p-3 mb-2">d-flex justify-content-between border p-3 mb-2</div>
+                <div class="d-flex justify-content-around border p-3 mb-2">d-flex justify-content-around border p-3 mb-2</div>
+                <div class="d-flex align-items-center border" style="height: 100px;">
+                align-items-center (alto fijo 100px)
+                </div>
+            </section>
+
+            <!-- GRID SYSTEM -->
+            <section class="mb-5">
+                <h4 class="mb-3">Sistema de columnas</h4>
+                <div class="row text-white text-center">
+                <div class="col-md-5 bg-primary p-2">col-md-5 bg-primary p-2</div>
+                <div class="col-md-4 bg-secondary p-2">col-md-4 bg-secondary p-2</div>
+                <div class="col-md-3 bg-success p-2">col-md-3 bg-success p-2</div>
+                </div>
+            </section>
+
+            <!-- SOMBRAS & BORDES -->
+            <section class="mb-5">
+                <h4 class="mb-3">Sombras y bordes</h4>
+                <div class="shadow-sm p-3 mb-3 bg-body rounded">shadow-sm p-3 mb-3 bg-body rounded</div>
+                <div class="shadow p-3 mb-3 bg-body rounded">shadow p-3 mb-3 bg-body rounded</div>
+                <div class="shadow-lg p-3 mb-3 bg-body rounded">shadow-lg p-3 mb-3 bg-body rounded</div>
+                <div class="border p-2 mb-2">border p-2 mb-2</div>
+                <div class="border border-primary p-2 mb-2">border border-primary p-2 mb-2</div>
+                <div class="border border-3 border-danger p-2 mb-2">border border-3 border-danger p-2 mb-2</div>
+            </section>
+
+            <!-- ESPACIADO -->
+            <section>
+                <h4 class="m-3">Margen & Padding</h4>
+                <div class="bg-light p-3 mb-3 border rounded">bg-light p-3 mb-3 border rounded</div>
+                <div class="bg-light mt-3 p-2 border rounded">bg-light mt-3 p-2 border rounded</div>
+                <div class="bg-light mt-4 mb-4 p-2 border rounded">bg-light mt-4 mb-4 p-2 border rounded</div>
+                
+                <!-- Nuevos ejemplos basados en la tabla izquierda que faltaban -->
+
+                <!-- Margen top -->
+                <div class="border mt-2 p-2 mb-2">border mt-2 p-2 mb-2 (margen arriba mt-2)</div>
+
+                <!-- Margen horizontal -->
+                <div class="border mx-2 p-2 mb-2">border mx-2 p-2 mb-2 (margen horizontal mx-2)</div>
+
+                <!-- Padding horizontal -->
+                <div class="border px-3 py-2 mb-2">border px-3 py-2 mb-2 (padding horizontal px-3, padding vertical py-2)</div>
+
+                <!-- Margen izquierdo (start) -->
+                <div class="border ms-3 p-2 mb-2">border ms-3 p-2 mb-2 (margen izquierdo ms-3)</div>
+
+                <!-- Margen derecho (end) -->
+                <div class="border me-3 p-2 mb-2">border me-3 p-2 mb-2 (margen derecho me-3)</div>
+
+                <!-- Padding arriba (top) -->
+                <div class="border pt-3 p-2 mb-2">border pt-3 p-2 mb-2 (padding arriba pt-3)</div>
+
+                <!-- Padding abajo (bottom) -->
+                <div class="border pb-3 p-2 mb-2">border pb-3 p-2 mb-2 (padding abajo pb-3)</div>
+            </section>
+        </main>
+
+
+    </div>
+</div>
