@@ -1,15 +1,20 @@
 <!-- ***** src/app/pages/button-view/button-view.component.html ***** -->
-
 <div class="button-container">
     <div style="text-align: center; padding: 15px;">
 
-        <i style="font-size: 48px; margin-left: 20px;"
-        class="fa-solid fa-table-cells"
-        (click)="toggleView('cards-group')"></i>
+        <i
+            class="fa-solid fa-table-cells mx-3 fs-1 text-secondary"
+            style="font-size: 48px; margin-left: 20px; cursor: pointer;"
+            (click)="toggleView('cards-group')"
+            title="Modo cuadricula">
+        </i>
 
-        <i style="font-size: 48px; margin-left: 20px;"
-        class="fa-solid fa-table-list"
-        (click)="toggleView('cards')"></i>        
+        <i
+            class="fa-solid fa-table-list mx-3 fs-1 text-secondary"            
+            style="font-size: 48px; margin-left: 20px; cursor: pointer;"
+            (click)="toggleView('cards')"
+            title="Modo lista">
+        </i>
 
     </div>
 </div>
