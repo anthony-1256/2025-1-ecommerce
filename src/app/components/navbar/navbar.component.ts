@@ -11,7 +11,7 @@ import { SidebarComponent } from "../../pages/sidebar/sidebar.component";
 import { ProductService } from '../../core/services/product.service';
 import { Product } from '../../core/models/product.model';
 import { ProductCategory } from '../../core/types/enums';
-
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-navbar',
@@ -45,6 +45,12 @@ export class NavbarComponent {
       this.isLoggedIn = !!user;
       this.isAdmin = user?.admin ?? false;
     });
+  }
+
+  /* Inizializacion de los dropdowns */
+  ngAfterViewInit(): void {
+    const dropdownElements = document.querySelectorAll('.dropdown-toggle');
+    dropdownElements.forEach((el) => new bootstrap.Dropdown(el));
   }
 
   /* mt: imagen del usuario actual segun su rol */
@@ -85,8 +91,6 @@ export class NavbarComponent {
   onCategorySelected(category: string): void {
     // Filtrar productos usando tu método reactivo o no reactivo
     this.router.navigate(['/category'], { queryParams: { category } });
-  }
-
-  
+  }  
   
 }

@@ -63,67 +63,67 @@ export class OffersComponent {
 
   /* ***** CICLO DE VIDA ***** */
   /* mt: ngOnInit */
-/* mt: ngOnInit */
-ngOnInit(): void {
-  this.isLoading = true;
+  /* mt: ngOnInit */
+  ngOnInit(): void {
+    this.isLoading = true;
 
-  /* Subscripción a productos */
-  this.productsSubscription = this.productService.products$.subscribe(products => {
-    this.offers = products.filter(p => p.isOffer ?? false);
-    this.offerSlides = this.chunkArray(this.offers, 4);
+    /* Subscripción a productos */
+    this.productsSubscription = this.productService.products$.subscribe(products => {
+      this.offers = products.filter(p => p.isOffer ?? false);
+      this.offerSlides = this.chunkArray(this.offers, 4);
 
-    this.offers.forEach(product => {
-      const lastPrice = this.pricesService.getLastPrice(product.idProduct);
-      const hasDiscount = this.pricesService.isPercentageDiscount(product.idProduct);
-      (product as any).lastPrice = lastPrice;
-      (product as any).hasDiscount = hasDiscount;
+      this.offers.forEach(product => {
+        const lastPrice = this.pricesService.getLastPrice(product.idProduct);
+        const hasDiscount = this.pricesService.isPercentageDiscount(product.idProduct);
+        (product as any).lastPrice = lastPrice;
+        (product as any).hasDiscount = hasDiscount;
+      });
+
+      console.log('✅ offerSlides:', this.offerSlides);
     });
 
-    console.log('✅ offerSlides:', this.offerSlides);
-  });
+    /* Subscripción a precios */
+    this.pricesSubscription = this.pricesService.prices$.subscribe(prices => {
+      this.prices = prices;
+    });
 
-  /* Subscripción a precios */
-  this.pricesSubscription = this.pricesService.prices$.subscribe(prices => {
-    this.prices = prices;
-  });
-
-  /* Subscripción a ventas */
-  this.salesSubscription = this.salesService.sales$.subscribe(sales => {
-    this.sales = sales;
-    this.updateTopProductsAndBrands();
-  });
-
-  this.salesService.sales$.subscribe(sales => {
-    this.sales = sales;
-    // Recalcular topProducts y brandSlides con la lógica centralizada
-    this.updateTopProductsAndBrands();
-  });
-
-  /* Subscripción a marcas */
-  this.brandsSubscription = this.brandService.brands$.subscribe(brands => {
-    this.brands = brands;
-    this.updateTopProductsAndBrands();
-  });
-
-  this.brandService.brands$.subscribe(brands => {
-    this.brands = brands;
-    // Recalcular topProducts y brandSlides (si sales ya llegó)
-    this.updateTopProductsAndBrands();
-  });
-
-  /* ✅ Listener global para sincronizar en vivo */
-  this.storageListener = (event: StorageEvent) => {
-    const key = event.key || '';
-    if (['products', 'brands', 'sales', 'prices'].includes(key)) {
-      console.log(`[OffersComponent] Cambio detectado en storage: ${key}`);
-      // Recalcular solamente los carruseles que dependen de ventas/marcas
+    /* Subscripción a ventas */
+    this.salesSubscription = this.salesService.sales$.subscribe(sales => {
+      this.sales = sales;
       this.updateTopProductsAndBrands();
-    }
-  };
-  window.addEventListener('storage', this.storageListener);
-  
+    });
 
-} /* fin ngOnInit */
+    this.salesService.sales$.subscribe(sales => {
+      this.sales = sales;
+      // Recalcular topProducts y brandSlides con la lógica centralizada
+      this.updateTopProductsAndBrands();
+    });
+
+    /* Subscripción a marcas */
+    this.brandsSubscription = this.brandService.brands$.subscribe(brands => {
+      this.brands = brands;
+      this.updateTopProductsAndBrands();
+    });
+
+    this.brandService.brands$.subscribe(brands => {
+      this.brands = brands;
+      // Recalcular topProducts y brandSlides (si sales ya llegó)
+      this.updateTopProductsAndBrands();
+    });
+
+    /* ✅ Listener global para sincronizar en vivo */
+    this.storageListener = (event: StorageEvent) => {
+      const key = event.key || '';
+      if (['products', 'brands', 'sales', 'prices'].includes(key)) {
+        console.log(`[OffersComponent] Cambio detectado en storage: ${key}`);
+        // Recalcular solamente los carruseles que dependen de ventas/marcas
+        this.updateTopProductsAndBrands();
+      }
+    };
+    window.addEventListener('storage', this.storageListener);
+
+    setTimeout(() => { this.isLoading = false; }, 500);
+  } /* fin ngOnInit */
 
 
   /* ngOnDestroy */

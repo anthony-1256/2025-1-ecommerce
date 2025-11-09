@@ -108,14 +108,14 @@
                 Administrador {{ currentUser?.username }}
               </a>
               <ul class="dropdown-menu" style="z-index: 1055;">
-                <li class="dropdown-item" [routerLink]="['/perfilAdmin']">Mi perfil</li>
-                <li class="dropdown-item" [routerLink]="['/marcas']">Gestión de marcas (( inventarios.length )) </li>
-                <li class="dropdown-item" [routerLink]="['/inventario']">Gestión de inventarios (( inventarios.length )) </li>
-                <li class="dropdown-item" [routerLink]="['/precios']">Gestión de precios y ofertas (( ofertas.length ))</li>
-                <li class="dropdown-item" [routerLink]="['/usuarios']">Gestión de usuarios (( usuarios.length ))</li>
-                <li class="dropdown-item" [routerLink]="['/masVendidos']">Mas vendidos (( usuarios.length ))</li>
+                <li class="dropdown-item" style="cursor: pointer" [routerLink]="['/perfilAdmin']">Mi perfil</li>
+                <li class="dropdown-item" style="cursor: pointer" [routerLink]="['/marcas']">Gestión de marcas (( inventarios.length )) </li>
+                <li class="dropdown-item" style="cursor: pointer" [routerLink]="['/inventario']">Gestión de inventarios (( inventarios.length )) </li>
+                <li class="dropdown-item" style="cursor: pointer" [routerLink]="['/precios']">Gestión de precios y ofertas (( ofertas.length ))</li>
+                <li class="dropdown-item" style="cursor: pointer" [routerLink]="['/usuarios']">Gestión de usuarios (( usuarios.length ))</li>
+                <li class="dropdown-item" style="cursor: pointer" [routerLink]="['/masVendidos']">Mas vendidos (( usuarios.length ))</li>
                 <li><hr class="dropdown-divider"></li>
-                <li class="dropdown-item" (click)="logout()">Cerrar sesión</li>
+                <li class="dropdown-item" style="cursor: pointer" (click)="logout()">Cerrar sesión</li>
               </ul>
             </li>
           }

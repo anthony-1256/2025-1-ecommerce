@@ -23,6 +23,10 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { FormAddpaymentComponent } from './pages/forms/form-addpayment/form-addpayment.component';
 import { PurchaseComponent } from './pages/purchase/purchase.component';
 import { PurchaseHistoryComponent } from './pages/purchase-history/purchase-history.component';
+import { PricesComponent } from './pages/prices/prices.component';
+import { BrandComponent } from './pages/brand/brand.component';
+import { BestSellersComponent } from './pages/best-sellers/best-sellers.component';
+import { CardViewComponent } from './pages/card-view/card-view.component';
 
 export const routes: Routes = [
 
@@ -31,6 +35,10 @@ export const routes: Routes = [
     { path: 'ofertas', component: HomeComponent, title: 'Ofertas' },
 
     { path: 'productos', component: ProductListComponent, title: 'Catálogo' },
+
+    { path: 'detalles/:id', component: CardViewComponent },
+
+    
 
     { path: 'registroAdmin', component: FormAdminregComponent, title: 'Registro de nuevos usuarios'},
         
@@ -61,12 +69,18 @@ export const routes: Routes = [
     /*  */
     { path: 'bootstrap', component: BootstrapCheatsheetComponent},
     /*  */
+
+    { path: 'marcas', component: BrandComponent, title: 'Gestion de Marcas' },
+
+    { path: 'precios', component: PricesComponent, title: 'Gestion de Precios' },
     
     { path: 'inventario', component: InventoryComponent, title: 'Gestion de inventarios' },
 
     { path: 'gestionOfertas', component: OffersComponent, title: 'Gestion de ofertas'},
 
     { path: 'usuarios', component: UsersComponent, title: 'Gestion de usuarios' },
+
+    { path: 'masVendidos', component: BestSellersComponent, title: 'Historicos de ventas' },
 
     { path: 'favoritos', component: FavoritesComponent},
     
