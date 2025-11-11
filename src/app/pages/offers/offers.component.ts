@@ -38,6 +38,8 @@ export class OffersComponent {
   public prices: PriceEntry[] = [] ;
   public sales: Sale[] = [];
   public brands: BrandModel[] = [];
+  public bestSellers: Sale[] = [];
+  public topBrands: BrandModel[] = [];
 
   /* fn: listener para cambios en almacenamiento local */
   private storageListener: ((event: StorageEvent) => void) | null = null;
@@ -63,7 +65,6 @@ export class OffersComponent {
 
   /* ***** CICLO DE VIDA ***** */
   /* mt: ngOnInit */
-  /* mt: ngOnInit */
   ngOnInit(): void {
     this.isLoading = true;
 
@@ -87,36 +88,34 @@ export class OffersComponent {
       this.prices = prices;
     });
 
-    /* Subscripción a ventas */
-    this.salesSubscription = this.salesService.sales$.subscribe(sales => {
-      this.sales = sales;
+    /* Subscripción a ventas globales */
+    this.salesService.sales$.subscribe((sales) => {
+      this.bestSellers = sales;
+      this.sales = this.bestSellers;
       this.updateTopProductsAndBrands();
     });
-
-    this.salesService.sales$.subscribe(sales => {
-      this.sales = sales;
-      // Recalcular topProducts y brandSlides con la lógica centralizada
+    /* Subscripción a marcas globales */
+    this.brandService.brands$.subscribe((brands) => {
+      this.topBrands = brands;
+      this.brands = this.topBrands;
       this.updateTopProductsAndBrands();
     });
-
-    /* Subscripción a marcas */
-    this.brandsSubscription = this.brandService.brands$.subscribe(brands => {
-      this.brands = brands;
-      this.updateTopProductsAndBrands();
-    });
-
-    this.brandService.brands$.subscribe(brands => {
-      this.brands = brands;
-      // Recalcular topProducts y brandSlides (si sales ya llegó)
-      this.updateTopProductsAndBrands();
-    });
-
-    /* ✅ Listener global para sincronizar en vivo */
+    
     this.storageListener = (event: StorageEvent) => {
       const key = event.key || '';
+
       if (['products', 'brands', 'sales', 'prices'].includes(key)) {
-        console.log(`[OffersComponent] Cambio detectado en storage: ${key}`);
-        // Recalcular solamente los carruseles que dependen de ventas/marcas
+        console.log('%c[OffersComponent] Listener activado', 'color: cyan; font-weight: bold;');
+        console.log('Evento completo:', event);
+        console.log('Clave modificada:', key);
+        console.log('Contenido actual de sales (antes de recargar):', this.sales);
+
+        this.salesService.loadSalesFromLocalStorage();
+        this.brandService.refreshBrands();
+
+        console.log('Sales recargadas desde storage:', this.salesService['salesSubject'].value);
+        console.log('Brands recargadas desde storage:', this.brandService['brandSubject'].value);
+
         this.updateTopProductsAndBrands();
       }
     };
@@ -229,7 +228,7 @@ export class OffersComponent {
   // logs para depuración
   console.log('🔁 updateTopProductsAndBrands -> topProductSlides:', this.topProductSlides);
   console.log('🔁 updateTopProductsAndBrands -> brandSlides:', this.brandSlides);
-
+  console.log('%c[OffersComponent] 🔄 Carruseles actualizados en tiempo real', 'color: lime; font-weight: bold;');
 
   }
 

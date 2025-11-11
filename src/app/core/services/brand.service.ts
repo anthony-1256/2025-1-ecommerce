@@ -26,6 +26,10 @@ export class BrandService {
     }
   }
 
+  public refreshBrands(): void {
+    this.loadBrandsFromLocalStorage();
+  }
+
   /* Persiste cambios en localStorage y notifica a suscriptores */
   private persistBrands(): void {
     localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(this._brands));

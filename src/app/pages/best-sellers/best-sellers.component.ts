@@ -12,13 +12,25 @@ import { CommonModule } from '@angular/common';
 })
 export class BestSellersComponent {
 
+  /* ***** PROPIEDADES PÚBLICAS ***** */
   sales: Sale[] = [];
   topSales: { idProduct: number; productName?: string; totalQuantitySold: number; totalRevenue: number; brand?: string }[] = [];
   salesByBrand: { brand?: string; productName?: string; totalQuantity: number; totalRevenue: number }[] = [];
+  
+  /* ***** PROPIEDADES DE CONTROL DE ORDEN GLOBAL POR TABLA ***** */
+  public sortFieldProducts: string = 'totalQuantitySold';
+  public sortDirProducts: 'asc' | 'desc' = 'desc';
+  public sortFieldDates: string = 'soldAt';
+  public sortDirDates: 'asc' | 'desc' = 'desc';
+  public sortFieldBrands: string = 'totalRevenue';
+  public sortDirBrands: 'asc' | 'desc' = 'desc';
 
+  
+  /* ***** CONTROLADOR ***** */
   constructor( private salesService: SalesService ) {}
 
-  groupSalesByProduct(sales: Sale[]): { idProduct: number; productName?: string; totalQuantitySold: number; totalRevenue: number; brand?: string }[] {
+  /* mt: groupSalesByProduct */
+  private groupSalesByProduct(sales: Sale[]): { idProduct: number; productName?: string; totalQuantitySold: number; totalRevenue: number; brand?: string }[] {
     const grouped: Record<number, { idProduct: number; productName?: string; totalQuantitySold: number; totalRevenue: number; brand?: string }> = {};
 
     for (const sale of sales) {
@@ -36,14 +48,15 @@ export class BestSellersComponent {
       }
     }
     return Object.values(grouped);
-  }
+  } /* fin mt:agrupación por producto */
 
   /**
    * Ordena los productos agrupados según cantidad vendida (o ingresos si se desea).
    * @param groupedSales Arreglo de productos agrupados.
    * @param byRevenue opcional: Si es true, ordena por ingresos; si es false, por cantidad vendida.
   */
-  sortGroupedSales(
+  /* mt: ordenar ventas agrupadas */
+  private sortGroupedSales(
     groupedSales: { idProduct: number; totalQuantitySold: number; totalRevenue: number; brand?: string }[],
     byRevenue: boolean = false
   ): { idProduct: number; totalQuantitySold: number; totalRevenue: number; brand?: string }[] {
@@ -109,6 +122,8 @@ export class BestSellersComponent {
     console.log('Ventas agrupadas por marca: ', this.salesByBrand);
   }
 
+  /* ***** METODOS DE CICLO DE VIDA ***** */
+  /* mt: ngOnInit */
   ngOnInit(): void {
 
     // 🔹 Sincronizar históricos al iniciar
@@ -127,6 +142,6 @@ export class BestSellersComponent {
       }
     });
 
-  }  
+  } /* fin ngOnInit */
 
-}
+} /* fin BestSellersComponent */

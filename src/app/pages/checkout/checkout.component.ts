@@ -313,10 +313,12 @@ ngOnInit() {
   /* fn: comparar objetos Payment en [(ngModel)] */
   comparePayments(a: Payment, b: Payment): boolean {
     return a && b ? a.method === b.method && a.alias === b.alias && a.bank === b.bank : a === b;
-  }
+  } /* fin comparePayments */
 
-  onCompletePurchase(): void {
+  /* onCompletePurchase */
+  onCompletePurchase(): void {    
 
+    
     console.log('selectedAddress:', this.selectedAddress);
     console.log('selectedPaymentMethod:', this.selectedPaymentMethod);
     console.log('cart items:', this.cartService.getItems());
@@ -360,7 +362,7 @@ ngOnInit() {
 
     /* 🔹 Registrar cada item del recibo como venta */
     receipt.items.forEach(item => {
-
+      
       const product = item.product; /* 🔹 producto del carrito */
       this.salesService.registerSale(
         userId,                  /* 🔹 id del usuario como string */
@@ -371,7 +373,10 @@ ngOnInit() {
         product.brand?.name || '',           /* marca (opcional) */
       );
     });
-
+    
+    localStorage.setItem('sales', JSON.stringify(this.salesService['salesSubject'].value));
+    window.dispatchEvent(new StorageEvent('storage', { key: 'sales' }));    
+    
     Swal.fire({
       icon: 'success',
       title: 'Compra completada',
