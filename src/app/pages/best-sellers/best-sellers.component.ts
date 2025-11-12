@@ -55,7 +55,7 @@ export class BestSellersComponent {
    * @param groupedSales Arreglo de productos agrupados.
    * @param byRevenue opcional: Si es true, ordena por ingresos; si es false, por cantidad vendida.
   */
-  /* mt: ordenar ventas agrupadas */
+  /* mt: sortGroupedSales */
   private sortGroupedSales(
     groupedSales: { idProduct: number; totalQuantitySold: number; totalRevenue: number; brand?: string }[],
     byRevenue: boolean = false
@@ -63,20 +63,22 @@ export class BestSellersComponent {
     return groupedSales.sort((a, b) => {
       return byRevenue ? b.totalRevenue - a.totalRevenue : b.totalQuantitySold - a.totalQuantitySold;
     });
-  }
+  } /* fin sortGroupedSales */
 
   /**
    * Devuelve los N productos más vendidos del array ya agrupado y ordenado.
    * @param sortedSales Array de productos agrupados y ordenados
    * @param topN Cantidad máxima de productos a devolver
    */
+  /* mt: getTopNSales */
   getTopNSales(
     sortedSales: { idProduct: number; totalQuantitySold: number; totalRevenue: number; brand?: string }[],
     topN: number = 5
   ): { idProduct: number; totalQuantitySold: number; totalRevenue: number; brand?: string }[] {
     return sortedSales.slice(0, topN);
-  }
+  } /* fin getTopNSales */
 
+  /* mt: groupSalesByBrand */
   groupSalesByBrand(sales: Sale[]): { brand?: string; productName?: string; totalQuantity: number; totalRevenue: number }[] {
     const grouped: Record<string, { brand?: string; productName?: string; totalQuantity: number; totalRevenue: number }> = {};
 
@@ -97,9 +99,9 @@ export class BestSellersComponent {
     }
 
     return Object.values(grouped);
-  }
+  } /* fin groupSalesByBrand */
 
-  /* mt:actualizar datso de ventas para todas las pestañas */
+  /* mt: updateSalesData */
   private updateSalesData( sales: Sale[] ): void {
 
     /* guardar todas las ventas */
@@ -120,7 +122,70 @@ export class BestSellersComponent {
 
     console.log('Top productos más vendidos actualizados: ', this.topSales);
     console.log('Ventas agrupadas por marca: ', this.salesByBrand);
-  }
+    
+  } /* mt: updateSalesData */
+
+  /* mt: toggleSort */
+  public toggleSort(table: 'products' | 'dates' | 'brands', field: string ): void {
+    if (table === 'products') {
+      if (this.sortFieldProducts === field ) {
+        this.sortDirProducts = this.sortDirProducts === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortFieldProducts = field;
+        this.sortDirProducts = 'asc';
+      }
+      this.applySort('products');
+    }
+
+    if ( table === 'brands' ) {
+      if (this.sortFieldBrands === field ) {
+        this.sortDirBrands = this.sortDirBrands === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortFieldBrands = field;
+        this.sortDirBrands = 'asc';
+      }
+      this.applySort('brands');
+    }
+  } /* fin toggleSort */
+
+  /* mt: applySort */
+  private applySort( table: 'products' | 'dates' | 'brands' ): void {
+    const compare = ( a: any, b: any, field: string, dir: 'asc' | 'desc', isDate = false ) => {
+      let va = a [field];
+      let vb = b[field];
+      if (isDate) {
+        va = va ? new Date(va).getTime(): 0;
+        vb = vb ? new Date(vb).getTime(): 0;
+      }
+      if ( typeof va === 'string' ) {
+        va = va.toLowerCase();
+        vb = ( vb || '' ).toLowerCase();
+      }
+      if (va < vb) return dir === 'asc' ? -1 : 1;
+      if (va > vb) return dir === 'asc' ? 1 : -1;
+      return 0;
+    };
+
+    if (table === 'products') {
+      const field = this.sortFieldProducts;
+      const dir = this.sortDirProducts;
+      this.topSales.sort((a, b) => compare (a, b, field, dir, false));
+    }
+
+    if(table === 'dates') {
+      const field = this.sortFieldDates;
+      const dir = this.sortDirDates;
+      /* sales[] contiene objetos Sale; si el campo es soldAt, marcar isDate = true */
+      const isDate = field === 'soldAt';
+      this.sales.sort((a, b) => compare (a, b, field, dir, isDate))
+    }
+
+    if (table === 'brands') {
+      const field = this.sortFieldBrands;
+      const dir = this.sortDirBrands;
+      this.salesByBrand.sort((a, b) => compare(a, b, field, dir, false));
+    }
+  } /* fin applySort */
 
   /* ***** METODOS DE CICLO DE VIDA ***** */
   /* mt: ngOnInit */
