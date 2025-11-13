@@ -126,24 +126,30 @@ export class BestSellersComponent {
   } /* mt: updateSalesData */
 
   /* mt: toggleSort */
-  public toggleSort(table: 'products' | 'dates' | 'brands', field: string ): void {
+  public toggleSort(
+    table: 'products' | 'dates' | 'brands',
+    field: string,
+    direction: 'asc' | 'desc'
+  ): void {
+    
     if (table === 'products') {
-      if (this.sortFieldProducts === field ) {
-        this.sortDirProducts = this.sortDirProducts === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortFieldProducts = field;
-        this.sortDirProducts = 'asc';
-      }
+      if (this.sortFieldProducts === field && this.sortDirProducts === direction ) return;
+      this.sortFieldProducts = field;
+      this.sortDirProducts = direction;
       this.applySort('products');
     }
 
-    if ( table === 'brands' ) {
-      if (this.sortFieldBrands === field ) {
-        this.sortDirBrands = this.sortDirBrands === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortFieldBrands = field;
-        this.sortDirBrands = 'asc';
-      }
+    if (table === 'dates') {
+      if (this.sortFieldDates === field && this.sortDirDates === direction) return;
+      this.sortFieldDates = field;
+      this.sortDirDates = direction;
+      this.applySort('dates');
+    }
+
+    if (table === 'brands') {
+      if (this.sortFieldBrands === field && this.sortDirBrands === direction) return;
+      this.sortFieldBrands = field;
+      this.sortDirBrands = direction;
       this.applySort('brands');
     }
   } /* fin toggleSort */

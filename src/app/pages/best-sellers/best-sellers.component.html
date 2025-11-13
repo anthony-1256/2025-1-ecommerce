@@ -8,8 +8,7 @@
             Productos más vendidos
         </button>
         </li>
-
-        
+                
         <li class="nav-item" role="presentation">
         <button class="nav-link" id="dates-tab" data-bs-toggle="tab" data-bs-target="#dates" type="button" role="tab">
             Fechas y horas de venta
@@ -28,80 +27,230 @@
 
         <!-- Tabla Productos más vendidos -->
         <div class="tab-pane fade show active" id="products" role="tabpanel">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-            <tr>
-
-                <th class="position-relative">
-                    <div class="dropdown">
-                        <button
-                            class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            >
-                            Id de producto
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <button class="dropdown-item" (click)="toggleSort('products', 'idProduct')">
-                                    Ascendente (0-9)
-                                </button>
-                            </li>
-                            <li>
-                                <button class="dropdown-item" (click)="toggleSort('products', 'idProduct')">
-                                    Descendente (9–0)
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                </th>
-
-
-                <th>Producto</th>
-                <th>Cantidad vendida</th>
-                <th>Ingresos totales</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Aquí se iterarán los productos desde topSales -->
-            <tr *ngFor="let product of topSales">
-                <td>{{ product.idProduct }}</td>
-                <td>{{ product.productName }}</td>
-                <td>{{ product.totalQuantitySold }}</td>
-                <td>{{ product.totalRevenue | currency }}</td>
-            </tr>
-            </tbody>
-        </table>
-        </div>
-        <!-- Tabla Fechas y horas de venta -->
-        <div class="tab-pane fade" id="dates" role="tabpanel">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
                     <tr>
-                        <th (click)="toggleSort('products', 'idProduct')">
-                            Id de producto                           
-                            <span *ngIf="sortFieldProducts==='idProduct'">
-                                {{ sortDirProducts === 'asc' ? '▲' : '▼' }}
-                            </span>
+                        <th class="position-relative">
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Id de producto
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'idProduct', 'asc')">
+                                            Ascendente (0-9)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'idProduct', 'desc')">
+                                            Descendente (9–0)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </th>
-                        <th (click)="toggleSort('products', 'productName')">
+                        <th class="position-relative">
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Producto
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'productName', 'asc')">
+                                            Ascendente (A-Z)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'productName', 'desc')">
+                                            Descendente (Z-A)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>                
+                        <th class="position-relative">
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">                            
+                                    Cantidad vendida
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'totalQuantitySold', 'asc')">
+                                            Ascendente (0-9)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'totalQuantitySold', 'desc' )">
+                                            Descendente (9-0)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>                
+                        <th class="position-relative">                    
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Ingresos totales
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'totalRevenue', 'asc')">
+                                            Ascendente (0-9)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('products', 'totalRevenue', 'desc')">
+                                            Descendente (9-0)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <!-- Aquí se iterarán los productos desde topSales -->
+                <tr *ngFor="let product of topSales">
+                    <td>{{ product.idProduct }}</td>
+                    <td>{{ product.productName }}</td>
+                    <td>{{ product.totalQuantitySold }}</td>
+                    <td>{{ product.totalRevenue | currency }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Tabla Fechas y horas de venta -->
+        <div class="tab-pane fade show active" id="dates" role="tabpanel">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+
+                        <th class="position-relative">
+                            <button
+                                class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Id de producto
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button class="dropdown-item" (click)="toggleSort('dates', 'idProduct', 'asc')">
+                                        Ascendente (0-9)
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item" (click)="toggleSort('dates', 'idProduct', 'desc')">
+                                        Descendente (9–0)
+                                    </button>
+                                </li>
+                            </ul>                            
+                        </th>
+                        <!-- <th (click)="toggleSort('products', 'productName')">
                             Producto                            
                             <span *ngIf="sortFieldProducts==='productName'">
                                 {{ sortDirProducts === 'asc' ? '▲' : '▼' }}
                             </span>
+                        </th> -->
+                        <th class="position-relative">
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Producto *
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('dates', 'productName', 'asc')">
+                                            Ascendente (A-Z)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('dates', 'productName', 'desc')">
+                                            Descendente (Z-A)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </th>
-                        <th (click)="toggleSort('products', 'totalQuantitySold')">
-                            Cantidad vendida
+
+                        <!-- <th (click)="toggleSort('products', 'totalQuantitySold')">
+                            Fecha de venta
                             <span *ngIf="sortFieldProducts==='totalQuantitySold'">
                                 {{ sortDirProducts === 'asc' ? '▲' : '▼' }}
                             </span>
+                        </th>-->
+                        <th class="position-relative">
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Fecha y hora de venta *
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('dates', 'soldAt', 'asc')">
+                                            Ascendente (0-9)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('dates', 'soldAt', 'desc')">
+                                            Descendente (9-0)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </th>
-                        <th (click)="toggleSort('products', 'totalRevenue')">
+
+                        <!--<th (click)="toggleSort('products', 'totalRevenue')">
                             Ingresos totales
                             <span *ngIf="sortFieldProducts==='totalRevenue'">
                                 {{ sortDirProducts === 'asc' ? '▲' : '▼' }}
                             </span>
+                        </th> -->
+                        <th class="position-relative">
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Cantidad vendida*
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('dates', 'quantity', 'asc')">
+                                            Ascendente (0-9)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item" (click)="toggleSort('dates', 'quantity', 'desc')">
+                                            Descendente (9-0)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </th>
                     </tr>
                 </thead>
@@ -122,18 +271,106 @@
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
                 <tr>
-                    <th>Marca</th>
-                    <th>Producto</th>
-                    <th>Cantidad vendida</th>
-                    <th>Ingresos totales</th>
+                    <!-- <th>Marca</th> -->
+                    <th class="position-relative">
+                        <button
+                            class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Marca
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'brand', 'asc')">
+                                    Ascendente (A-Z)
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'brand', 'desc')">
+                                    Descendente (Z-A)
+                                </button>
+                            </li>
+                        </ul>                            
+                    </th>
+
+                    <!-- <th>Producto</th> -->
+                    <!-- <th class="position-relative">
+                        <button
+                            class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Producto
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'productName', 'asc')">
+                                    Ascendente (A-Z)
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'productName', 'desc')">
+                                    Descendente (Z-A)
+                                </button>
+                            </li>
+                        </ul>                            
+                    </th> -->
+
+                    <!-- <th>Cantidad vendida</th> -->
+<!--                     <th class="position-relative">
+                        <button
+                            class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Producto
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'totalQuantity', 'asc')">
+                                    Ascendente (0-9)
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'totalQuantity', 'desc')">
+                                    Descendente (9-0)
+                                </button>
+                            </li>
+                        </ul>                            
+                    </th> -->
+
+                    <!-- <th>Ingresos totales</th> -->
+                    <th class="position-relative">
+                        <button
+                            class="btn btn-sm btn-dark dropdown-toggle w-100 text-start"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Ingresos totales
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'totalRevenue', 'asc')">
+                                    Ascendente (0-9)
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" (click)="toggleSort('brands', 'totalRevenue', 'desc')">
+                                    Descendente (9-0)
+                                </button>
+                            </li>
+                        </ul>                            
+                    </th>
+                    
                 </tr>
                 </thead>
                 <tbody>
                     <!-- Aquí se iterarán los ingresos por marca (se agrupará en TS) -->
                     <tr *ngFor="let brand of salesByBrand">
                         <td>{{ brand.brand }}</td>
-                        <td>{{ brand.productName }}</td>
-                        <td>{{ brand.totalQuantity }}</td>
+                        <!-- <td>{{ brand.productName }}</td>
+                        <td>{{ brand.totalQuantity }}</td> -->
                         <td>{{ brand.totalRevenue | currency }}</td>
                     </tr>
                 </tbody>
