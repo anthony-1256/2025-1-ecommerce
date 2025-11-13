@@ -7,6 +7,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CompanyInfoService } from '../../core/services/company-info.service';
 import { CompanyInfo } from '../../core/models/company-info.model';
+import { SalesService } from '../../core/services/sales.service';
 
 @Component({
   selector: 'app-purchase-history',
@@ -26,18 +27,38 @@ export class PurchaseHistoryComponent implements OnInit{
     private purchaseService: PurchaseService,
     private authService: AuthService,
     private router: Router,
+    private salesService: SalesService,
     private companyInfoService: CompanyInfoService
   ) {}
   
+  /* mt: ngOnInit */
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     if (user) {
       this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
 
-      /* info de la empresa */
+      this.salesService.sales$.subscribe(() => {
+        this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
+      });
+
+      window.addEventListener('storage', () => {
+        this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
+      });
+
       this.companyData = this.companyInfoService.getCompanyData();
     }
-  }
+  } /* fin ngOnInit */
+
+  /* mt: ngOnInit */
+  ngOnDestroy(): void {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      
+      window.removeEventListener('storage', () => {
+        this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
+      });
+    }
+  } /* fin ngOnDestroy */
 
   viewDetails(receipt: Receipt): void {
     this.selectedReceipt = receipt;

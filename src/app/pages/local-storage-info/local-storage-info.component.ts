@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-local-storage-info',
@@ -10,7 +11,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 })
 export class LocalStorageInfoComponent implements OnInit, OnDestroy {
 
-  
   usage = {
     usedMB: 0,
     limitMB: 5,
@@ -22,13 +22,11 @@ export class LocalStorageInfoComponent implements OnInit, OnDestroy {
   
   ngOnInit(): void {
     this.updateUsage();
-    this.intervalId = setInterval(() => this.updateUsage(), 1000);
-    window.addEventListener('storage', () => this.updateUsage());
+    this.intervalId = setInterval(() => this.updateUsage(), 1000);    
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.intervalId);
-    window.removeEventListener('storage', () => this.updateUsage());
+    clearInterval(this.intervalId);    
   }
   
   getLocalStorageUSage(): {
@@ -56,7 +54,8 @@ export class LocalStorageInfoComponent implements OnInit, OnDestroy {
     return { usedMB, limitMB, details };
   }
 
-  public updateUsage(): void {
+  /* fn: updateUsage */
+  public updateUsage( showAlert = false ): void {
     let totalBytes = 0;
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -65,23 +64,79 @@ export class LocalStorageInfoComponent implements OnInit, OnDestroy {
         totalBytes += key.length * 2 + value.length * 2;
       }
     }
-    const usedMB = totalBytes / (1024 * 1024);
+
+    const usedMB = totalBytes / ( 1024 * 1024 );
     this.usage.usedMB = parseFloat(usedMB.toFixed(2));
-    const percent = (usedMB / this.usage.limitMB) * 100;
-    if ( percent < 50 ) this.color = 'bg-success';
-    else if (percent < 80) this.color = 'bg-warning';
-    else this.color = 'bg-danger';
+    const percent = ( usedMB / this.usage.limitMB ) * 100;
+
+    if (percent < 50) this.color = 'bg-success';
+    else if (percent > 80) this.color = 'bg-warning';
+    else this.color= 'bg-danger';
+
+    if (showAlert) {
+      Swal.fire({
+        title: 'Actualizado',
+        text: 'Uso de almacenamiento actualizado correctamente.',
+        icon: 'success',
+        showConfirmButton: true,
+        confirmButtonText: 'Ok'
+      });
+    }    
   }
 
+  /* mt: clearStorageKey */
   clearStorageKey(key: string, confirmBefore = true): void {
     if (!key) return;
-    if (confirmBefore) {
-      const ok = confirm(`¿Eliminar '${key}' del localStorage? Esta acción no se puede deshacer.`);
-      if (!ok) return;
+
+    const salesKeys = [
+      'sales',
+      'historicSalesSynced_v1',
+      'app_sales_v1',
+      'app_sales_by_user',
+      ...Object.keys(localStorage).filter(k => k.startsWith('receipts_user_'))
+    ];
+
+    const isSalesClear = key === 'app_sales_v1';
+    const title = isSalesClear
+      ? '¿Eliminar historial de compras?'
+      : `¿Eliminar clave'${key}'?`;
+    const text = isSalesClear
+      ? 'Se eliminarán todas las claves relacionadas con el historial de ventas.'
+      : 'Esta acción no se puede deshacer.';
+    
+    if ( confirmBefore ) {
+      Swal.fire({
+        title,
+        text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then(result => {
+        if (result.isConfirmed) {
+
+          if (isSalesClear) {
+            salesKeys.forEach(k => {
+              localStorage.removeItem(k);
+            });
+            console.log('[local-storage-info] Historial de compras eliminado:', salesKeys);
+          } else {
+            localStorage.removeItem(key);
+            console.log(`[local-storage-info] Removed localStorage key: ${key}`);
+          }
+          this.updateUsage();
+          Swal.fire({
+            title: 'Eliminado',
+            text: isSalesClear
+            ? 'Historial de compras eliminado correctamente.'
+            : `La clave '${key}' fue eliminada.`,
+            icon: 'success',            
+            showConfirmButton: true,
+            confirmButtonText: 'Ok'
+          });
+        }
+      });
     }
-    localStorage.removeItem(key);
-    console.log(`[local-storage-info] Removed localStorage key: ${key}`);
-    this.updateUsage();
   }
 
   clearCategory(category: string ): void {

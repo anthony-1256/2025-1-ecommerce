@@ -316,8 +316,7 @@ ngOnInit() {
   } /* fin comparePayments */
 
   /* onCompletePurchase */
-  onCompletePurchase(): void {    
-
+  onCompletePurchase(): void {
     
     console.log('selectedAddress:', this.selectedAddress);
     console.log('selectedPaymentMethod:', this.selectedPaymentMethod);

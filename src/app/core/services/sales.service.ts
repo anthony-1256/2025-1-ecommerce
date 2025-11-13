@@ -27,7 +27,11 @@ export class SalesService {
   loadSalesFromLocalStorage(): void {
     try {
       const raw = localStorage.getItem(this.LOCAL_STORAGE_KEY);
-      this._sales = raw ? (JSON.parse(raw) as Sale[]) : [];
+      const parsed = raw ? JSON.parse(raw) : [];
+
+      this._sales = Array.isArray(parsed) ? parsed : [];
+
+
     } catch (err) {
       console.error('Salesservice: error al parsear ventas desde localstorage', err);
       this._sales = [];
@@ -108,6 +112,12 @@ export class SalesService {
         
         receipts.forEach((receipt: any) => {
           receipt.items.forEach((item: any) => {
+
+            const exists = this._sales.some(s =>
+              s.idProduct === item.product.idProduct.idProduct &&
+              s.soldAt === receipt.date
+            );
+            if (exists) return;
             
             console.log('DEBUG item: ', item);
             

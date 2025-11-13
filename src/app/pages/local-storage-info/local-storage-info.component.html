@@ -1,3 +1,4 @@
+<!-- src/app/pages/local-storage-info/local-storage-info.component.html -->
 <div class="storage-info d-flex align-items-center justify-content-center gap-2 p-2 shadow-sm bg-body-tertiary rounded">
     
     <!-- Barra de progreso -->
@@ -19,7 +20,7 @@
     </span>
 
     <!-- Botones compactos -->
-    <button class="btn btn-outline-secondary btn-sm" (click)="updateUsage()">🔄</button>
+    <button class="btn btn-outline-secondary btn-sm" (click)="updateUsage(true)">🔄</button>
     <button class="btn btn-outline-warning btn-sm" (click)="clearStorageKey('userFavorites')">★</button>
     <button class="btn btn-outline-danger btn-sm" (click)="clearStorageKey('app_sales_v1')">💰</button>
 
