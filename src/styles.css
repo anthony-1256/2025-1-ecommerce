@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    app-print-receipt, app-print-receipt * {
+        visibility: visible !important;
+    }
+
+    app-print-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    #receipt-content {
+        width: 100% !important;
+        max-width: none !important;
+        font-size: 12px !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+}

@@ -27,12 +27,17 @@ import { PricesComponent } from './pages/prices/prices.component';
 import { BrandComponent } from './pages/brand/brand.component';
 import { BestSellersComponent } from './pages/best-sellers/best-sellers.component';
 import { CardViewComponent } from './pages/card-view/card-view.component';
+import { PrintReceiptComponent } from './pages/print-receipt/print-receipt.component';
 
 export const routes: Routes = [
 
     { path: '', component: HomeComponent },
 
     { path: 'ofertas', component: HomeComponent, title: 'Ofertas' },
+
+    /* Para ajuste de ticket */
+    { path: 'pruebaTicket', component: PrintReceiptComponent },
+    /*  */
 
     { path: 'productos', component: ProductListComponent, title: 'Catálogo' },
 
@@ -63,6 +68,8 @@ export const routes: Routes = [
     { path: 'historial de compras', component: PurchaseHistoryComponent },
 
     { path: 'recibos', component: ConfirmationComponent },
+
+    { path: 'imprimir/:id', loadComponent: () => import('./pages/print-receipt/print-receipt.component').then(m => m.PrintReceiptComponent) },
 
     /*  */
     { path: 'bootstrap', component: BootstrapCheatsheetComponent},

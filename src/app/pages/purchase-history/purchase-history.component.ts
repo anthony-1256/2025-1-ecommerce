@@ -1,5 +1,5 @@
 /***** src/app/pages/purchase-history/purchase-history.ts *****/
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Receipt } from '../../core/models/receipt.model';
 import { PurchaseService } from '../../core/services/purchase.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -9,16 +9,20 @@ import { CompanyInfoService } from '../../core/services/company-info.service';
 import { CompanyInfo } from '../../core/models/company-info.model';
 import { SalesService } from '../../core/services/sales.service';
 
+/* import { PrintReceiptComponent } from '../print-receipt/print-receipt.component'; */
+
 @Component({
   selector: 'app-purchase-history',
   standalone: true,
-  imports: [ CommonModule, RouterLink ],
+  imports: [ CommonModule, RouterLink/* , PrintReceiptComponent */ ],
   templateUrl: './purchase-history.component.html',
   styleUrl: './purchase-history.component.css'
 })
-export class PurchaseHistoryComponent implements OnInit{
-
+export class PurchaseHistoryComponent implements OnInit{  
   
+  private _isOpen = false;
+  selectedReceiptForModal: any = null;
+  private storageListener?: (event: StorageEvent) => void;
   receipts: Receipt[] = [];
   selectedReceipt: Receipt | null = null;
   companyData!: CompanyInfo;
@@ -31,140 +35,171 @@ export class PurchaseHistoryComponent implements OnInit{
     private companyInfoService: CompanyInfoService
   ) {}
   
-  /* mt: ngOnInit */
+  /* mt: ngOnInit */  
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    if (user) {
+    if (!user) return;
+
+    // Carga inicial
+    this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
+    this.companyData = this.companyInfoService.getCompanyData();
+
+    // Actualizar cuando salesService emite cambios
+    this.salesService.sales$.subscribe(() => {
       this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
+    });
 
-      this.salesService.sales$.subscribe(() => {
-        this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
-      });
-
-      window.addEventListener('storage', () => {
-        this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
-      });
-
-      this.companyData = this.companyInfoService.getCompanyData();
+    // Mismo listener pero guardando la referencia
+    /* this.storageListener = () => {
+      this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
+    }; */
+    this.storageListener = (event: StorageEvent) => {
+      console.log('[storage] storageListener fired, event.key=', event.key);
+      this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
     }
+    
+    window.addEventListener('storage', this.storageListener);
   } /* fin ngOnInit */
-
-  /* mt: ngOnInit */
+  
+  /* mt: ngOnDestroy */
   ngOnDestroy(): void {
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      
-      window.removeEventListener('storage', () => {
-        this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
-      });
+    if (this.storageListener) {
+      window.removeEventListener('storage', this.storageListener as EventListener);
     }
   } /* fin ngOnDestroy */
 
+  /* mt: viewDetails */
   viewDetails(receipt: Receipt): void {
+    console.log('VIEW DETAILS DISPARADO:', receipt);
     this.selectedReceipt = receipt;
-  }
+  } /* fin viewDetails */
 
+  /* getter: fullAddress */
   get FullAddress(): string{
     const a = this.selectedReceipt?.deliveryAddress;
     return a
     ? `${a.street} #${a.number}, ${a.neighborhood}, C.P. ${a.postalCode}, ${a.city}, ${a.state}`: '';
-  }
-
+  } /* fin fullAddress */
+  
+  /* getter: paymentSummary */
   get paymentSummary(): string {
     const p = this.selectedReceipt?.paymentMethod;
     return p
     ? `${p.alias} - ${p.bank} - ${p.method}` : '';
-  }
+  } /* fin paymentSummary */
+  
+  /* getter: isOpen */
+  get isOpen(): boolean {
+    return this._isOpen;
+  } /* fin isOpen */
+  
+  /* setter: isOpen */
+  set isOpen(value: boolean) {
+    console.log('[TRACE] isOpen cambiado a ->', value);
+    console.trace();
+    this._isOpen = value;
+  } /* fin isOpen */
+  
+  /* mt: printNow */
+  printNow(): void {
+    if (!this.selectedReceipt) return;
+    
+    const width = 900;
+    const height = 900;
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+    
+    const url = `/imprimir/${this.selectedReceipt.idReceipt}`;
+    
+    const htmlTicket = `Imprimiendo su Ticket. Espere por favor...`;
 
-  /* mt: imprimir recibo actual */
-  printCurrentReceipt(): void {
-    if (!this.selectedReceipt) return;    
+    const newWindow = window.open(
+      url,
+      '_blank',
+      `width=${width}, height=${height}, left=${left}, top=${top}, scrollbars=yes,resizable=yes`
+    );
+    
+    if (newWindow) {
+      newWindow.document.body.innerHTML = htmlTicket ;
+      newWindow.document.close();      
+    }
 
-    const printWindow = window.open('', '', 'width=600, height= 800');
-    if (!printWindow) return;
+    /* const receiptContent = document.getElementById('receipt-wrapper')?.innerHTML;
+    if (!receiptContent) return;
 
-    /* creacion de estructura basica de html */
-    const html = document.createElement('html');
-    const head = document.createElement('head');
-    const body = document.createElement('body');
-
-    /* Titulo del reibo */
-    const title = printWindow.document.createElement('title');
-    title.innerText = 'Recibo de compra';
-    head.appendChild(title);
-
-    // Estilos básicos (puedes extraer esto a un archivo externo si prefieres)
-    const style = printWindow.document.createElement('style');
-    style.textContent = `
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        font-size: 12px;
-      }
-
-      .screen-only {
-        max-width: 325px;
-        margin: auto;
-      }
-
-      @media print {
-        .screen-only {
-          max-width: 100% !important;
-        }
-
-        .table {
-          width: 100% !important;
-          font-size: 11px;
-          border-collapse: collapse;
-        }
-
-        .table th, .table td {
-          border: 1px solid #ccc;
-          padding: 6px;
-          text-align: center;
-        }
-
-        h3, h6 {
-          margin: 4px 0;
-          text-align: center;
-        }
-
-        ul {
-          list-style: none;
-          padding: 0;
-          text-align: center;
-        }
-
-        ul li {
-          margin: 4px 0;
-        }
-      }
+    printWindow.document.open();
+    printWindow.document.head.innerHTML = `
+      <title>Ticket</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     `;
-    head.appendChild(style);
-
-    /* Contenido del recibo */
-    const content = printWindow.document.createElement('div');
-    content.innerHTML = document.getElementById('receipt-content')?.innerHTML || '';
-
-    body.appendChild(content);
-    html.appendChild(head);
-    html.appendChild(body);
-
-    /* Reemplazar el contenido del nuevo documento */
-    printWindow.document.documentElement.replaceWith(html);
-
-    /* Esperar carga y lanzar impresión */
+    printWindow.document.body.innerHTML = receiptContent;
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 300);
-  }
 
+    printWindow.focus();
+    printWindow.print(); */
+  } /* fin printNow */
+
+  // fn:downloadPdf
+  downloadPdf(): void {
+    if (!this.selectedReceipt) return;
+
+    const id = this.selectedReceipt.idReceipt;
+
+    const element = document.getElementById('receipt-content');
+    if (!element) return;
+
+    import('html2canvas').then(html2canvas => {
+      html2canvas.default(element, {
+        scale: 3,
+        useCORS: true
+      }).then(canvas => {
+
+        const imgData = canvas.toDataURL('image/png');
+        import('jspdf').then(jsPDF => {
+
+          const pdf = new jsPDF.jsPDF('p', 'mm', 'a4');
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+
+          // Ajuste automático para que todo el ticket quepa en una sola página
+          const pageW = pdf.internal.pageSize.getWidth() - 20;  
+          const pageH = pdf.internal.pageSize.getHeight() - 20;
+
+          let imgW = pageW;
+          let imgH = (canvas.height * imgW) / canvas.width;
+
+          // Si la imagen es más alta que la página → escalar proporcionalmente
+          if (imgH > pageH) {
+            const scale = pageH / imgH;
+            imgW = imgW * scale;
+            imgH = imgH * scale;
+          }
+
+          pdf.addImage(imgData, 'PNG', 10, 10, imgW, imgH);
+
+          // Hojas adicionales
+          /* while (heightLeft > 0) {
+            pdf.addPage();
+            position = 10;
+
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight - 20;
+          } */
+
+          pdf.save(`ticket_${id}.pdf`);
+        });
+      });
+    });
+  } /* fin downloadPdf */
+
+  /* mt: closeDetails */
   closeDetails(): void {
     this.selectedReceipt = null;
-  }
+  } /* fin closeDetails */
 
+  /* mt: goBack */
   goBack(): void {
     this.router.navigate(['/compras']); // o /products según lo que definas
-  }
+  } /* fin goBack */
 
 }

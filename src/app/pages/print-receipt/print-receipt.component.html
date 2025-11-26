@@ -1,0 +1,67 @@
+<!-- src/app/pages/print-receipt/print-receipt.component.html -->
+<div id="receipt-wrapper" *ngIf="selectedReceipt">
+    <div id="receipt-content"
+        class="mx-auto p-3 screen-only print-area"
+        style="font-size: 10px; max-width: 380px; line-height: 1.15; width:380px; margin: 0 auto; box-sizing: border-box; border: 1px solid #000; padding: 10px;">
+        
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h3 style="margin-bottom: 0; font-size: 14px;">🛍️ {{ companyData.name }}</h3>
+            <br>
+            <p style="margin: 0; font-size: 9px;">RFC: {{ companyData.rfc }}</p>
+            <p style="margin: 0; font-size: 9px;">Dirección: {{ companyData.address }}</p>
+            <p style="margin: 0; font-size: 9px;">Telefono: {{ companyData.phone }}</p>
+            <p style="margin: 0; font-size: 9px;">Email: {{ companyData.email }}</p>
+            <br>
+            <h3 style="font-size: 12px; margin: 6px 0;">Ticket de compra</h3>
+            <hr style="margin: 6px 0;" />
+        </div>
+
+        <div style="font-size: 9.5px;">
+            <p><strong>Folio:</strong> {{ selectedReceipt.idReceipt }}</p>
+            <p><strong>Fecha:</strong> {{ selectedReceipt.date | date:'medium' }}</p>
+            <p><strong>Pago:</strong> {{ paymentSummary }}</p>
+            <p><strong>Entrega:</strong> {{ FullAddress }}</p>
+        </div>
+
+        <div id="products-area" style="margin-top: 8px; min-height: 120px;">
+            <table class="table small" 
+                style="width:100%; table-layout: fixed; font-size: 8px; border-collapse: collapse; margin:0 auto; display:block;">
+                <thead>
+                    <tr style="background-color: #e0e0e0;">
+                        <th style="width:32%; text-align:center; padding:3px;">Producto</th>
+                        <th style="width:10%; text-align:center; padding:3px;">Cant.</th>
+                        <th style="width:24%; text-align:center; padding:3px;">Precio</th>
+                        <th style="width:14%; text-align:center; padding:3px;">Desc.</th>
+                        <th style="width:20%; text-align:center; padding:3px;">Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let item of selectedReceipt.items">
+                        <td style="padding:3px; overflow-wrap: break-word;">{{ item.product.productName }}</td>
+                        <td style="text-align:center; padding:2px;">{{ item.quantity }}</td>
+                        <td style="text-align:center; padding:2px;">{{ item.unitPrice | currency }}</td>
+                        <td style="text-align:center; padding:2px;"></td>
+                        <td style="text-align:center; padding:3px;">{{ item.totalPrice | currency }}</td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align:right; padding:5px;"><strong>Total de productos:</strong></td>
+                        <td style="text-align:center; padding:5px;">{{ selectedReceipt.totalQuantity }}</td>
+                        <td colspan="2" style="text-align:right; padding:5px;"><strong>Total pagado:</strong></td>
+                        <td style="text-align:center; padding:5px;">{{ selectedReceipt.totalAmount | currency }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 8px; text-align: start; font-size:9px;">
+            <h6 style="margin:6px 0;"><strong>Nota:</strong></h6>
+            <ul style="padding:0; margin:4px 0;">
+                <li style="margin:3px 0;">Conserve este comprobante para aclaraciones o devoluciones.</li>
+                <li style="margin:3px 0;">Garantía válida por 30 días naturales con ticket físico o digital.</li>
+                <li style="margin:3px 0;">Gracias por su compra. ¡Vuelva pronto!</li>
+            </ul>
+        </div>
+    </div>
+</div>

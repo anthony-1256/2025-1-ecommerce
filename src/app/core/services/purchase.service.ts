@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CartService } from './cart.service';
-import { AuthService } from './auth.service';
+
 import { ProductService } from './product.service';
 import { Address } from '../models/address.model';
 import { Payment } from '../models/payment.model';
@@ -15,7 +15,7 @@ export class PurchaseService {
 
   constructor(
     private cartService: CartService,
-    private authService: AuthService,
+    
     private productService: ProductService,
   ){}
 
@@ -97,7 +97,6 @@ export class PurchaseService {
 
     return newReceipt;
   }
-
 
   getReceiptsByUser(userId: number): Receipt[] {
     const key = `${this.receiptKeyPrefix}${userId}`;

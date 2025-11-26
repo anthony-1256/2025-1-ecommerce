@@ -1,0 +1,5 @@
+@media print {
+    body *:not(#receipt-content):not(#receipt-content *) {
+        display: none !important;
+    }
+}
