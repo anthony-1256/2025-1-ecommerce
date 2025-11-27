@@ -1,5 +1,123 @@
-@media print {
-    body *:not(#receipt-content):not(#receipt-content *) {
-        display: none !important;
-    }
+/* ====== ESTILOS BASE DEL TICKET (380px) ====== */
+/* #receipt-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
+
+#receipt-content {
+    width: 380px;
+    max-width: 380px;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    font-size: 10px;
+    line-height: 1.15;
+} */
+
+/* ====== TABLA PRINCIPAL DEL TICKET ====== */
+/* .ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin: 0 auto;
+    font-size: 8px;
+}
+
+.ticket-table th,
+.ticket-table td {
+    border: 1px solid #000;
+    padding: 3px;
+    font-size: 8px;
+}
+
+.ticket-table thead tr {
+    background-color: #e0e0e0;
+} */
+
+/* ====== ENCABEZADO ====== */
+/* .receipt-header {
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.ticket-header-title {
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.ticket-header small,
+.ticket-header p {
+    font-size: 9px;
+    margin: 0;
+}
+
+.ticket-subtitle {
+    font-size: 12px;
+    margin: 6px 0;
+} */
+
+/* ====== DATOS PRINCIPALES ====== */
+/* .ticket-info p {
+    font-size: 9.5px;
+    margin: 0;
+} */
+
+/* ====== TABLA DEL TICKET ====== */
+/* .ticket-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin: 0 auto;
+    font-size: 8px;
+}
+
+.ticket-table th,
+.ticket-table td {
+    border: 1px solid #000;
+    padding: 3px;
+    font-size: 8px;
+}
+
+.ticket-table thead tr {
+    background-color: #e0e0e0;
+} */
+
+/* ====== NOTAS ====== */
+/* .ticket-notes h6 {
+    margin: 6px 0;
+    font-size: 9px;
+}
+
+.ticket-notes li {
+    margin: 3px 0;
+    font-size: 9px;
+} */
+
+/* ====== ESTILOS DE IMPRESIÓN ====== */
+/* @media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    app-print-receipt,
+    app-print-receipt * {
+        visibility: visible !important;
+    }
+
+    app-print-receipt {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+    }
+
+    #receipt-content {
+        width: 380px !important;
+        max-width: 380px !important;
+        border: 1px solid #000 !important;
+        padding: 10px !important;
+        font-size: 10px !important;
+    }
+} */

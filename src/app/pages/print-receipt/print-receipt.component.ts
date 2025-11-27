@@ -4,6 +4,8 @@ import { AuthService } from '../../core/services/auth.service';
 import { Receipt } from '../../core/models/receipt.model';
 import { ActivatedRoute } from '@angular/router';
 import { PurchaseService } from '../../core/services/purchase.service';
+import { CompanyInfo } from '../../core/models/company-info.model';
+import { CompanyInfoService } from '../../core/services/company-info.service';
 
 @Component({
   selector: 'app-print-receipt',
@@ -14,16 +16,15 @@ import { PurchaseService } from '../../core/services/purchase.service';
 })
 export class PrintReceiptComponent {
   
-    @Input() receipt: Receipt | null = null;  
-
-  
+  @Input() receipt: Receipt | null = null;
   selectedReceipt: Receipt | null = null;
-  companyData: any = {};
+  companyData!: CompanyInfo;
 
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
-    private purchaseService: PurchaseService
+    private purchaseService: PurchaseService,
+    private companyInfoService: CompanyInfoService
   ) {}
   
   /* mt: ngOnInit */
@@ -39,13 +40,12 @@ export class PrintReceiptComponent {
       if (user) {
         const receipts = this.purchaseService.getReceiptsByUser(user.idUser) || [];
         this.selectedReceipt = receipts.find(r => r.idReceipt == idParam) || null;        
-        this.companyData = this.selectedReceipt?.companyInfo ?? {};
+        this.companyData = this.companyInfoService.getCompanyData();
       }
     } else {
       this.selectedReceipt = this.receipt;
-      this.companyData = this.selectedReceipt?.companyInfo ?? {};
-    }
-    
+      this.companyData = this.companyInfoService.getCompanyData();
+    }    
     
     const closeWindow = () => {
       try {

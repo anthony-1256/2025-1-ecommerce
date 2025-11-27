@@ -48,13 +48,9 @@ export class PurchaseHistoryComponent implements OnInit{
     this.salesService.sales$.subscribe(() => {
       this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
     });
-
-    // Mismo listener pero guardando la referencia
-    /* this.storageListener = () => {
-      this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
-    }; */
+    
     this.storageListener = (event: StorageEvent) => {
-      console.log('[storage] storageListener fired, event.key=', event.key);
+      /* console.log('[storage] storageListener fired, event.key=', event.key); */
       this.receipts = this.purchaseService.getReceiptsByUser(user.idUser);
     }
     
@@ -70,7 +66,7 @@ export class PurchaseHistoryComponent implements OnInit{
 
   /* mt: viewDetails */
   viewDetails(receipt: Receipt): void {
-    console.log('VIEW DETAILS DISPARADO:', receipt);
+    /* console.log('VIEW DETAILS DISPARADO:', receipt); */
     this.selectedReceipt = receipt;
   } /* fin viewDetails */
 
@@ -95,13 +91,13 @@ export class PurchaseHistoryComponent implements OnInit{
   
   /* setter: isOpen */
   set isOpen(value: boolean) {
-    console.log('[TRACE] isOpen cambiado a ->', value);
-    console.trace();
+    /* console.log('[TRACE] isOpen cambiado a ->', value);
+    console.trace(); */
     this._isOpen = value;
   } /* fin isOpen */
   
   /* mt: printNow */
-  printNow(): void {
+  /* printNow(): void {
     if (!this.selectedReceipt) return;
     
     const width = 900;
@@ -109,8 +105,7 @@ export class PurchaseHistoryComponent implements OnInit{
     const left = window.screenX + (window.innerWidth - width) / 2;
     const top = window.screenY + (window.innerHeight - height) / 2;
     
-    const url = `/imprimir/${this.selectedReceipt.idReceipt}`;
-    
+    const url = `/imprimir/${this.selectedReceipt.idReceipt}`;    
     const htmlTicket = `Imprimiendo su Ticket. Espere por favor...`;
 
     const newWindow = window.open(
@@ -123,21 +118,7 @@ export class PurchaseHistoryComponent implements OnInit{
       newWindow.document.body.innerHTML = htmlTicket ;
       newWindow.document.close();      
     }
-
-    /* const receiptContent = document.getElementById('receipt-wrapper')?.innerHTML;
-    if (!receiptContent) return;
-
-    printWindow.document.open();
-    printWindow.document.head.innerHTML = `
-      <title>Ticket</title>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    `;
-    printWindow.document.body.innerHTML = receiptContent;
-    printWindow.document.close();
-
-    printWindow.focus();
-    printWindow.print(); */
-  } /* fin printNow */
+  } */ /* fin printNow */
 
   // fn:downloadPdf
   downloadPdf(): void {
@@ -176,16 +157,6 @@ export class PurchaseHistoryComponent implements OnInit{
           }
 
           pdf.addImage(imgData, 'PNG', 10, 10, imgW, imgH);
-
-          // Hojas adicionales
-          /* while (heightLeft > 0) {
-            pdf.addPage();
-            position = 10;
-
-            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight - 20;
-          } */
-
           pdf.save(`ticket_${id}.pdf`);
         });
       });

@@ -1,25 +1,34 @@
 /* You can add global styles to this file, and also import other style files */
-@media print {
+/* @media print {
     body * {
         visibility: hidden !important;
     }
 
-    app-print-receipt, app-print-receipt * {
+    app-print-receipt,
+    app-print-receipt * {
         visibility: visible !important;
     }
 
     app-print-receipt {
         position: absolute;
-        left: 0;
-        top: 0;
+        left: 50px;        
+        top: 50px;        
         width: 100%;
+        height: 100%;
     }
 
-    #receipt-content {
-        width: 100% !important;
-        max-width: none !important;
+    app-print-receipt #receipt-content {
+        width: 380px !important;
+        max-width: 380px !important;
+        margin: 0 auto !important;
         font-size: 12px !important;
-        border: none !important;
+        border: 1px solid black !important;
         padding: 0 !important;
     }
-}
+
+    .ticket-table-bordered,
+    .ticket-table-bordered th,
+    .ticket-table-bordered td {
+        border: 1px solid #000;
+    }
+} */
