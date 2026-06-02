@@ -1,0 +1,189 @@
+<!--users.component.html -->
+<div class="container-fluid p-3 bg-light rounded-3 shadow-sm">
+
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="search-icon">
+      <i class="bi bi-search"></i>
+    </span>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Buscar usuarios..."
+      aria-label="Buscar Usuarios"
+      aria-describedby="search-icon"
+      (input)="filterByAllFields($event)" />
+  </div>
+
+  <div class="mb-3">
+    <button class="btn btn-primary" (click)="openAddUserModal()">
+      + Agregar usuario
+    </button>
+  </div>
+
+  <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUserModalLabel">Agregar nuevo usuario</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <app-form-adminreg (userRegistered)="onUserRegistered($event)"></app-form-adminreg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div
+  id="scroll-top"
+  class="mb-1"
+  style="overflow-x: auto; position: relative; height: 20px;"
+  onscroll="document.getElementById('scroll-wrapper').scrollLeft = this.scrollLeft">
+  <div style="width: fit-content; height: 0; overflow: hidden;">
+    <table class="table w-auto m-0 p-0 border-0" style="visibility: hidden;">
+      <thead>
+        <tr>
+          <th style="min-width: 80px;"></th>
+          <th style="min-width: 100px;"></th>
+          <th style="min-width: 180px;"></th>
+          <th style="min-width: 80px;"></th>
+          <th style="min-width: 100px;"></th>
+          <th style="min-width: 200px;"></th>
+          <th style="min-width: 150px;"></th>
+          <th style="min-width: 160px;"></th>
+          <th style="min-width: 100px;"></th>
+          <th style="min-width: 120px;"></th>
+          <th style="min-width: 100px;"></th>
+          <th style="min-width: 100px;"></th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+<div
+  id="scroll-wrapper"
+  style="max-height: 400px; overflow-x: auto; overflow-y: auto;"
+  onscroll="document.getElementById('scroll-top').scrollLeft = this.scrollLeft; document.getElementById('scroll-bottom').scrollLeft = this.scrollLeft">
+
+  <table class="table table-sm table-bordered table-hover text-nowrap align-middle w-auto">
+    <thead class="table-primary sticky-top">
+      <tr>
+        <th style="min-width: 80px;">ID</th>
+        <th style="min-width: 100px;"></th>
+        <th style="min-width: 180px;">Nombre completo</th>
+        <th style="min-width: 80px;"></th>
+        <th style="min-width: 100px;"></th>
+        <th style="min-width: 200px;">Correo</th>
+        <th style="min-width: 150px;">Nombre de usuario</th>
+        <th style="min-width: 160px;"></th>
+        <th style="min-width: 100px;">Rol</th>
+        <th style="min-width: 120px;">Editar Rol</th>
+        <th style="min-width: 100px;">Guardar</th>
+        <th style="min-width: 100px;">Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of filteredUsers; track user._id) {
+        <tr>
+
+          <td>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="user._id"
+              [disabled]="user.userName === 'admin-master'" /> <!-- <-- ajuste pc#00004 -->
+          </td>
+
+          <td>
+            <div class="d-flex justify-content-center">
+            </div>
+          </td>
+
+          <td>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.name"
+              [disabled]="user.userName === 'admin-master'" /> <!-- <-- ajuste pc#00004 -->
+          </td>
+
+          <td></td>
+          <td></td>
+
+          <td>
+            <input
+              type="email"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.email"
+              [disabled]="user.userName === 'admin-master'"> <!-- <-- ajuste pc#00004 -->
+          </td>
+
+          <td>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.userName"
+              [disabled]="user.userName === 'admin-master'"> <!-- <-- ajuste pc#00004 -->
+          </td>
+
+          <td></td>
+
+          <td>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              [(ngModel)]="user.role"
+              [disabled]="user.userName === 'admin-master'"> <!-- <-- ajuste pc#00004 -->
+          </td>
+
+          <td>
+            <button
+              class="btn btn-sm btn-warning"
+              (click)="toggleRole(user)"
+              [disabled]="user.userName === 'admin-master'"> <!-- <-- ajuste pc#00004 -->
+              {{ user.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin' }} <!-- <-- ajuste pc#00004 -->
+            </button>
+          </td>
+
+          <td>
+            <button
+              class="btn btn-sm btn-success"
+              (click)="updateUser(user)"
+              [disabled]="user.userName === 'admin-master'"> <!-- <-- ajuste pc#00004 -->
+              Guardar
+            </button>
+          </td>
+
+          <td>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="deleteUser(user._id)"
+              [disabled]="user.userName === 'admin-master'"> <!-- <-- ajuste pc#00004 -->
+              Eliminar
+            </button>
+          </td>
+
+        </tr>
+      }
+      @if (users.length === 0) {
+        <tr>
+          <td colspan="12">
+            <div class="p-2 bg-info bg-opacity-25 text-primary text-center rounded">
+              No hay usuarios registrados
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div
+  id="scroll-bottom"
+  class="mt-1"
+  style="overflow-x: auto;"
+  onscroll="document.getElementById('scroll-wrapper').scrollLeft = this.scrollLeft">
+</div>

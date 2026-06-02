@@ -1,100 +1,247 @@
 /***** app.routes.ts *****/
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { ProductListComponent } from './pages/product-list/product-list.component';
-import { InventoryComponent } from './pages/inventory/inventory.component';
-import { FormRegisterComponent } from './pages/forms/form-register/form-register.component';
-import { FormLoginComponent } from './pages/forms/form-login/form-login.component';
-import { CheckoutComponent } from './pages/checkout/checkout.component';
-import { ConfirmationComponent } from './pages/confirmation/confirmation.component';
-import { ProfileComponent } from './pages/profiles/profile/profile.component';
-import { AdminProfileComponent } from './pages/profiles/admin-profile/admin-profile.component';
-import { OffersComponent } from './pages/offers/offers.component';
-import { UsersComponent } from './pages/users/users.component';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { FormAdminregComponent } from './pages/forms/form-adminreg/form-adminreg.component';
-import { CartComponent } from './pages/cart/cart.component';
-import { UpdateUserComponent } from './pages/forms/update-user/update-user.component';
-import { FavoritesComponent } from './pages/favorites/favorites.component';
-import { AddressComponent } from './pages/address/address.component';
-import { FormAddaddressComponent } from './pages/forms/form-addaddress/form-addaddress.component';
-import { BootstrapCheatsheetComponent } from './pages/bootstrap-cheatsheet/bootstrap-cheatsheet.component';
-import { PaymentsComponent } from './pages/payments/payments.component';
-import { FormAddpaymentComponent } from './pages/forms/form-addpayment/form-addpayment.component';
-import { PurchaseComponent } from './pages/purchase/purchase.component';
-import { PurchaseHistoryComponent } from './pages/purchase-history/purchase-history.component';
-import { PricesComponent } from './pages/prices/prices.component';
-import { BrandComponent } from './pages/brand/brand.component';
-import { BestSellersComponent } from './pages/best-sellers/best-sellers.component';
-import { CardViewComponent } from './pages/card-view/card-view.component';
-/* import { PrintReceiptComponent } from './pages/print-receipt/print-receipt.component'; */
+import { authGuard, adminGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
 
-    { path: '', component: HomeComponent },
+    {
+        path: '',
+        loadComponent: () =>
+            import('./pages/general/home/home.component')
+                .then(m => m.HomeComponent)
+    },
 
-    { path: 'ofertas', component: HomeComponent, title: 'Ofertas' },
+    {
+        path: 'addPayments',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/payments/form-addpayment/form-addpayment.component')
+                .then(m => m.FormAddpaymentComponent),
+        title: 'Agregar método de pago'
+    },
 
-    /* Para ajuste de ticket */
-    /* { path: 'pruebaTicket', component: PrintReceiptComponent }, */
-    /*  */
+    {
+        path: 'address',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/addresses/address/address.component')
+                .then(m => m.AddressComponent)
+    },
 
-    { path: 'productos', component: ProductListComponent, title: 'Catálogo' },
+    {
+        path: 'best-sellers',
+        canActivate: [ adminGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/business/best-sellers/best-sellers.component')
+                .then(m => m.BestSellersComponent),
+        title: 'Historicos de ventas'
+    },
 
-    { path: 'detalles/:id', component: CardViewComponent },    
+    {
+        path: 'bootstrap',
+        loadComponent: () =>
+            import('./pages/utilities/bootstrap-cheatsheet/bootstrap-cheatsheet.component')
+                .then(m => m.BootstrapCheatsheetComponent),
+        title: 'Bootstrap Cheatsheet'
+    },
 
-    { path: 'registroAdmin', component: FormAdminregComponent, title: 'Registro de nuevos usuarios'},
-        
-    { path: 'registro', component: FormRegisterComponent, title: 'Registro de usuario' },
+    {
+        path: 'marcas', /* <-- ajuste pc#0004 */
+        canActivate: [ adminGuard ],
+        loadComponent: () =>
+            import('./pages/products/brand/brand.component')
+                .then(m => m.BrandComponent),
+        title: 'Gestion de Marcas'
+    },
 
-    { path: 'inicioSesion', component: FormLoginComponent, title: 'Inicio de sesión' },
-    
-    { path: 'perfilUsuario', component: ProfileComponent },
-    
-    { path: 'perfilAdmin', component: AdminProfileComponent },
+    {
+        path: 'carrito',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/purchases/cart/cart.component')
+                .then(m => m.CartComponent),
+        title: 'Carrito de compras'
+    },
 
-    { path: 'updateUser', component: UpdateUserComponent},
+    {
+        path: 'checkout',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/purchases/checkout/checkout.component')
+                .then(m => m.CheckoutComponent),
+        title: 'Checkout'
+    },
 
-    { path: 'direcciones', component: AddressComponent},    
+    {
+        path: 'compras',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/purchases/purchase/purchase.component')
+                .then(m => m.PurchaseComponent),
+        title: 'Compras'
+    },
 
-    { path: 'addAddress', component: FormAddaddressComponent},
+    {
+        path: 'confirmacion',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/purchases/confirmation/confirmation.component')
+                .then(m => m.ConfirmationComponent),
+        title: 'Confirmación'
+    },
 
-    { path: 'pagos', component: PaymentsComponent},
+    {
+        path: 'detalles/:id',
+        loadComponent: () =>
+            import('./shared/components/card-view/card-view.component')
+                .then(m => m.CardViewComponent)
+    },
 
-    { path: 'addPayments', component: FormAddpaymentComponent },
+    {
+        path: 'direcciones',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/addresses/address/address.component')
+                .then(m => m.AddressComponent),
+        title: 'Direcciones'
+    },
 
-    { path: 'compras', component: PurchaseComponent },
+    {
+        path: 'wish-list',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('../app/pages/products/wish-list/wish-list.component')
+                .then(m => m.WishListComponent),
+        title: 'Favoritos'
+    },
 
-    { path: 'historial de compras', component: PurchaseHistoryComponent },
+    {
+        path: 'gestionOfertas',
+        canActivate: [ adminGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('../app/pages/business/offers/offers.component')
+                .then(m => m.OffersComponent),
+        title: 'Gestion de ofertas'
+    },
 
-    { path: 'recibos', component: ConfirmationComponent },
+    {
+        path: 'inicioSesion',
+        loadComponent: () =>
+            import('./pages/auth/form-login/form-login.component')
+                .then(m => m.FormLoginComponent),
+        title: 'Inicio de sesión'
+    },
 
-    /* { path: 'imprimir/:id', loadComponent: () => import('./pages/print-receipt/print-receipt.component').then(m => m.PrintReceiptComponent) }, */
+    {
+        path: 'inventario',
+        canActivate: [ adminGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/products/inventory/inventory.component')
+                .then(m => m.InventoryComponent),
+        title: 'Gestion de inventarios'
+    },
 
-    /*  */
-    { path: 'bootstrap', component: BootstrapCheatsheetComponent},
-    /*  */
+    {
+        path: 'ofertas',
+        loadComponent: () =>
+            import('./pages/general/home/home.component')
+                .then(m => m.HomeComponent),
+        title: 'Ofertas'
+    },
 
-    { path: 'marcas', component: BrandComponent, title: 'Gestion de Marcas' },
+    {
+        path: 'pagos',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/payments/payment/payments.component')
+                .then(m => m.PaymentsComponent),
+        title: 'Pagos'
+    },
 
-    { path: 'precios', component: PricesComponent, title: 'Gestion de Precios' },
-    
-    { path: 'inventario', component: InventoryComponent, title: 'Gestion de inventarios' },
+    {
+        path: 'perfilAdmin',
+        canActivate: [ adminGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/users/profiles/admin-profile/admin-profile.component')
+                .then(m => m.AdminProfileComponent),
+        title: 'Perfil administrador'
+    },
 
-    { path: 'gestionOfertas', component: OffersComponent, title: 'Gestion de ofertas'},
+    {
+        path: 'perfilUsuario',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/users/profiles/profile/profile.component')
+                .then(m => m.ProfileComponent),
+        title: 'Perfil usuario'
+    },
 
-    { path: 'usuarios', component: UsersComponent, title: 'Gestion de usuarios' },
+    {
+        path: 'productos',
+        loadComponent: () =>
+            import('./pages/products/product-list/product-list.component')
+                .then(m => m.ProductListComponent),
+        title: 'Catálogo'
+    },
 
-    { path: 'masVendidos', component: BestSellersComponent, title: 'Historicos de ventas' },
+    {
+        path: 'purchase-history',
+        canActivate: [ authGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/users/purchase-history/purchase-history.component')
+                .then(m => m.PurchaseHistoryComponent),
+        title: 'Historial de compras'
+    },
 
-    { path: 'favoritos', component: FavoritesComponent},
-    
-    { path: 'carrito', component: CartComponent, title: 'Carrito de compras' },
-    
-    { path: 'checkout', component: CheckoutComponent, title: 'Checkout' },
-    
-    { path: 'confirmacion', component: ConfirmationComponent, title: 'Confirmación' },
-    
-    { path: '**', component: NotFoundComponent, title: 'Página no encontrada' }
+    {
+        path: 'recibos',
+        loadComponent: () =>
+            import('./pages/purchases/confirmation/confirmation.component')
+                .then(m => m.ConfirmationComponent),
+        title: 'Recibos'
+    },
+
+    {
+        path: 'registro',
+        loadComponent: () =>
+            import('./pages/auth/form-register/form-register.component')
+                .then(m => m.FormRegisterComponent),
+        title: 'Registro de usuario'
+    },
+
+    {
+        path: 'registroAdmin',
+        canActivate: [ adminGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/auth/form-adminreg/form-adminreg.component')
+                .then(m => m.FormAdminregComponent),
+        title: 'Registro de nuevos usuarios'
+    },
+
+    {
+        path: 'updateUser',
+        canActivate: [ adminGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/admin/update-user/update-user.component')
+                .then(m => m.UpdateUserComponent),
+        title: 'Actualizar usuario'
+    },
+
+    {
+        path: 'usuarios',
+        canActivate: [ adminGuard ], /* <-- ajuste pc#0003 */
+        loadComponent: () =>
+            import('./pages/admin/users/users.component')
+                .then(m => m.UsersComponent),
+        title: 'Gestion de usuarios'
+    },
+
+    {
+        path: '**',
+        loadComponent: () =>
+            import('./pages/general/not-found/not-found.component')
+                .then(m => m.NotFoundComponent),
+        title: 'Página no encontrada'
+    }
 
 ];

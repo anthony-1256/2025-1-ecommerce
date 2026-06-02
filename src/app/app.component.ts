@@ -1,15 +1,29 @@
-import { Component } from '@angular/core';
+/* app.component.ts */
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from "./components/navbar/navbar.component";
-import { FooterComponent } from "./components/footer/footer.component";
-import { ButtonViewComponent } from './pages/button-view/button-view.component';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { FooterComponent } from './shared/components/footer/footer.component';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent, FooterComponent],
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    NavbarComponent,
+    FooterComponent
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+  
   title = 'ecommerce';
+
+  constructor( private authService: AuthService ) {}
+
+  ngOnInit(  ): void {
+    this.authService.initSession();
+  } /* end ngOnInit */
+
 }

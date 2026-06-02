@@ -1,5 +1,5 @@
-/***** src/app/core/types/enums.ts *****/
-export enum Gender {
+/* enums.ts */
+export enum sex {
 
     male = 'male',
     female = 'female',
@@ -71,11 +71,11 @@ export enum Speed {
 
 export enum PaymentMethod {
 
-  CreditCard = 'Tarjeta de crédito',
-  DebitCard = 'Tarjeta de débito',
-  Paypal = 'Paypal',
-  BankTransfer = 'Transferencia bancaria',
-  Cash = 'Pago en efectivo'
+  CreditCard = 'credit_card',
+  DebitCard = 'debit_card',
+  Paypal = 'paypal',
+  BankTransfer = 'bank_transfer',
+  CashOnDelivery = 'cash_on_delivery'
 
 }
 

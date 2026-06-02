@@ -1,0 +1,19 @@
+<!-- src/app/pages/products/products/products.component.html -->
+
+<div class="container mt-2 pt-5">
+
+    <app-button-view (viewChange)="changeView($event)"></app-button-view>
+
+    @if ( isLoading ) {
+        <p>Cargando productos...</p>
+    } @else {
+
+        @if (currentView === 'cards-group') {
+        <app-cards-group [products]="products"></app-cards-group>
+        } @else {
+        <app-cards [products]="products"></app-cards>
+        }
+
+    }
+
+</div>

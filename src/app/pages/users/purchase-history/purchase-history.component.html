@@ -1,0 +1,242 @@
+<!-- src/app/pages/purchase-history/purchase-history.component.html -->
+
+                            <!-- sombreado -->
+<div class="container mt-5  shadow-sm p-3 mb-3 bg-body rounded">
+    <h2 class="mb-4 text-center">🧾 Historial de Compras</h2>    
+    <div class="text-center mt-4 p-3">
+        <button class=" btn btn-secondary" (click)="goBack()">Volver</button>
+    </div>
+    
+    <!-- sin compras -->        
+    <div *ngIf="receipts.length === 0" class="col-12">
+        <div class="alert alert-info text-center">
+            <p>No hay compras registradas.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        
+        <!-- columna izquierda -->
+        <div *ngIf="receipts.length > 0" class="col-md-6">
+            <div class="class-responsive">
+                                                                                                    <!-- sombreado -->
+                <table class="table table-sm table-bordered table-hover text-center align-middle    shadow p-3 mb-3 bg-body rounded">
+                    <thead class="table-dark text-center">                        
+                        <tr>
+                            <th class="col-md-4">Fecha</th>
+                            <th class="col-md-4">Total</th>
+                            <th class="col-md-2">Cantidad</th>
+                            <th class="col-md-2">Detalles</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <tr *ngFor="let receipt of receipts" class="text-center">
+                            <td >{{ receipt.date | date: 'short' }}</td>
+                            <td >{{ receipt.totalAmount | currency }}</td>
+                            <td>{{ receipt.totalQuantity }}</td>
+                            <td class="text-center">
+                                <button
+                                    class="btn btn-sm btn-primary px-2"
+                                    (click)="viewDetails(receipt)">
+                                    Ver
+                                </button>                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div *ngIf="selectedReceipt" class="col-md-6">
+                                            <!-- sombreado -->
+            <div class="card-shadow mt-2    shadow-lg p-3 mb-3 bg-body rounded">
+                <div class="card-header d-flex justify-content-between align-items-center mb-3">
+                    <strong>📜 Detalles del recibo</strong>
+                    
+                    <!-- Botón para abrir ticket -->
+                    <!-- <div class="mt-3 mb-1">
+                        <button class="btn btn-zoom" (click)="printNow()">
+                            🖨️
+                        </button>
+                    </div> -->
+
+                    <button
+                        title="Guardar PDF"
+                        alt="Guardar PDF"
+                        class="btn btn-zoom"
+                        (click)="downloadPdf()">💾</button>
+
+                    <button
+                        class="btn btn-zoom btn-sm btn-outline btn-danger" (click)="closeDetails()">
+                        <strong>X</strong>
+                    </button>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-bordered table-sm small">
+                        <tbody>
+                            <tr>
+                                <th class="col-md-3 text-end">ID</th>
+                                <td class="col-md-9 justify-content">{{ selectedReceipt.idReceipt }}</td>
+                            </tr>
+                            <tr>
+                                <th  class="col-md-3 text-end">Fecha:</th>
+                                <td class="col-md-9 justify-content">{{ selectedReceipt.date| date:'medium' }}</td>
+                            </tr>
+                            <tr>
+                                <th  class="col-md-3 text-end">Pago:</th>
+                                <td class="col-md-9 justify-content">{{ paymentSummary }}</td>
+                            </tr>
+                            <tr>
+                                <th  class="col-md-3 text-end">Entrega:</th>
+                                <td class="col-md-9 justify-content">{{ FullAddress }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="mt-4"><strong>🛒 Productos</strong></h6>
+                <table class="table table-bordered table-sm small">
+                    <thead class="table-dark">
+                        <tr>
+                            <th colspan="2"></th>
+                            <th colspan="2" style="text-align: center;">Precio</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th class="col-md-5 text-center">Producto</th>
+                            <th class="col-md-1 text-center">Cantidad</th>
+                            <th class="col-md-2 text-center">Anterior</th>
+                            <th class="col-md-2 text-center">Actual</th>
+                            <th class="col-md-2 text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let item of selectedReceipt.items">
+                            <tr>
+                                <td style="padding: 3px; overflow-wrap: break-word;">
+                                    {{ item.product.name }}
+                                </td>
+                                <td style="text-align: center; padding: 2px; font-size: 12px;">
+                                    {{ item.quantity }}
+                                </td>
+                                <td style="text-align: center; padding: 2px;  font-size: 12px;">
+                                    {{ hasDiscountMap[item.product._id] ? (getBeforeLastPrice()[ item.product._id] | currency) : '- - -' }}
+                                </td>
+                                <td style="text-align: center; padding: 2px;  font-size: 12px;">
+                                    {{ item.unitPrice | currency }}
+                                </td>
+                                <td style="text-align: center; padding: 3px; font-size: 12px;">
+                                    {{ item.totalPrice | currency }}
+                                </td>
+                            </tr>
+                            <tr *ngIf="hasDiscountMap[item.product._id]">                                
+                                <td colspan="5" class="text-center">
+                                    <strong>% Descuento -</strong> {{ getDiscountPercentage(item.product._id, item.unitPrice) }}%
+                                </td>
+                            </tr>
+
+                        </ng-container>
+                        <tr>
+                            <td class="text-end"><strong>Total de productos:</strong></td>
+                            <td class="text-center">{{ selectedReceipt.totalQuantity }}</td>
+                            <td colspan="2" class="text-end"><strong>Total pagado:</strong></td>
+                            <td class="text-start">{{ selectedReceipt.totalAmount | currency }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Ticket de compra -->
+            <!-- src/app/pages/purchase-history/purchase-history.component.html -->
+            <div id="receipt-wrapper">
+                <div id="receipt-content"
+                    class="mx-auto p-3 screen-only"
+                    style="font-size: 10px; max-width: 380px; line-height: 1.15; width:380px; margin: 0 auto; box-sizing: border-box; border: 1px solid #000; padding: 10px;">                    
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <h3 style="margin-bottom: 0; font-size: 14px;">🛍️ {{ companyData.name }}</h3>
+                        <br>
+                        <p style="margin: 0; font-size: 9px;">RFC: {{ companyData.rfc }}</p>
+                        <p style="margin: 0; font-size: 9px;">Dirección: {{ companyData.address }}</p>
+                        <p style="margin: 0; font-size: 9px;">Telefono: {{ companyData.phone }}</p>
+                        <p style="margin: 0; font-size: 9px;">Email: {{ companyData.email }}</p>
+                        <br>
+                        <h3 style="font-size: 12px; margin: 6px 0;">Ticket de compra</h3>
+                        <hr style="margin: 6px 0;" />
+                    </div>
+
+                    <div style="font-size: 9.5px;">
+                        <p><strong>Folio:</strong> {{ selectedReceipt.idReceipt }}</p>
+                        <p><strong>Fecha:</strong> {{ selectedReceipt.date | date:'medium' }}</p>
+                        <p><strong>Pago:</strong> {{ paymentSummary }}</p>
+                        <p><strong>Entrega:</strong> {{ FullAddress }}</p>
+                    </div>
+
+                    <div id="products-area" style="margin-top: 8px; min-height: 120px;">
+                        <table class="table small" 
+                            style="width:100%; table-layout: fixed; font-size: 8px; border-collapse: collapse; margin:0 auto; display:block;">
+                            <thead>                            
+                                <tr>
+                                    <th colspan="2"></th>
+                                    <th colspan="2" style="text-align: center;">Precio</th>
+                                    <th></th>
+                                </tr>
+                                <tr style="background-color: #e0e0e0;">
+                                    <th style="width:32%; text-align:center; padding:3px;">Producto</th>
+                                    <th style="width:10%; text-align:center; padding:3px;">Cant.</th>
+                                    <th style="width:19%; text-align:center; padding:3px;">Aterior</th>
+                                    <th style="width:19%; text-align:center; padding:3px;">Actual</th>
+                                    <th style="width:20%; text-align:center; padding:3px;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let item of selectedReceipt.items">
+                                    <tr>
+                                        <td style="padding:3px; overflow-wrap: break-word;">
+                                            {{ item.product.name }}
+                                        </td>
+                                        <td style="text-align:center; padding:2px;">
+                                            {{ item.quantity }}
+                                        </td>
+                                        <td style="text-align:center; padding:2px;">
+                                            {{ hasDiscountMap[item.product._id] ? (getBeforeLastPrice()[ item.product._id] | currency) : '- - -' }}
+                                        </td>
+                                        <td style="text-align:center; padding:2px;">
+                                            {{ item.unitPrice | currency }}
+                                        </td>
+                                        <td style="text-align:center; padding:3px;">
+                                            {{ item.totalPrice | currency }}
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="hasDiscountMap[item.product._id]">                                
+                                        <td colspan="5" class="text-center">
+                                            <strong>% Descuento -</strong> {{ getDiscountPercentage(item.product._id, item.unitPrice) }}%
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                                <tr>
+                                    <td style="text-align:right; padding:5px;"><strong>Total de productos:</strong></td>
+                                    <td style="text-align:center; padding:5px;">{{ selectedReceipt.totalQuantity }}</td>
+                                    <td colspan="2" style="text-align:right; padding:5px;"><strong>Total pagado:</strong></td>
+                                    <td style="text-align:center; padding:5px;">{{ selectedReceipt.totalAmount | currency }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 8px; text-align: start; font-size:9px;">
+                        <h6 style="margin:6px 0;"><strong>Nota:</strong></h6>
+                        <ul style="padding:0; margin:4px 0;">
+                            <li style="margin:3px 0;">Conserve este comprobante para aclaraciones o devoluciones.</li>
+                            <li style="margin:3px 0;">Garantía válida por 30 días naturales con ticket físico o digital.</li>
+                            <li style="margin:3px 0;">Gracias por su compra. ¡Vuelva pronto!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>

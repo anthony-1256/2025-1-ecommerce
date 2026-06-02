@@ -1,0 +1,22 @@
+<!-- button-view.component.html -->
+<div class="button-container">
+    <div style="text-align: center; padding: 15px;">
+
+        <i
+            class="fa-solid fa-table-cells mx-3 fs-1"
+            [ngClass]="currentView === 'cards-group' ? 'text-primary' : 'text-secondary'"
+            style="font-size: 48px; margin-left: 20px; cursor: pointer;"
+            (click)="toggleView( 'cards-group' )"
+            title="Vista grupo">
+        </i>
+
+        <i
+            class="fa-solid fa-table-cells mx-3 fs-1"
+            [ngClass]="currentView === 'cards-group' ? 'text-primary' : 'text-secondary'"
+            style="font-size: 48px; margin-left: 20px; cursor: pointer;"
+            (click)="toggleView('cards')"
+            title="Vista vertical">
+        </i>
+
+    </div>
+</div>

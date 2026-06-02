@@ -1,4 +1,4 @@
-/***** src/app/core/models/cart.model.ts *****/
+/* cart.model.ts */
 import { Product } from "./product.model";
 import { User } from "./user.model";
 
@@ -13,16 +13,11 @@ export interface CartItem {
 /* ob: Carrito de compras */
 export interface Cart {
 
-    idCart: string;
-    idUser: string;
+    _id: string;
     items: CartItem[];
     user?: User;
 
     totalQuantity: number;
     totalPrice: number;
-
-    /* payMethod: PaymentMethod;
-    deliveryOption: DeliveryOption;
-    address?: string; */
-
+    
 }

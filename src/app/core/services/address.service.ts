@@ -1,117 +1,89 @@
-/***** src/app/core/services/address.service.ts *****/
+/* address.service.ts */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
-import { Address, UserAddressEntry } from '../models/address.model';
-import { AuthService } from './auth.service';
+import { HttpClient } from '@angular/common/http';
+
+import {  
+  Observable,
+  catchError,
+  of,
+} from 'rxjs';
+
+import { environment } from '../../../environments/environment';
+import { Address } from '../../core/models/address.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AddressService {
+export class AddressService {  
 
-  /* ar: lista interna de direcciones agrupadas por usuario */
-  private userAddresses: UserAddressEntry[] = [];
-
-  /* ob: observable reactivo para las direcciones de todos los usuarios */
-  private addressesSubject = new BehaviorSubject<UserAddressEntry[]>([]);
-  public addresses$: Observable<UserAddressEntry[]> = this.addressesSubject.asObservable();
+  private baseUrl = `${ environment.baseUrl }/address`;
 
   constructor(
-    private authService: AuthService
-  ) {
-    this.loadAddressesFromLocalStorage();
-  }
+    private httpClient: HttpClient
+  ) {}
 
-  /* mt: cargar direcciones desde localStorage */
-  private loadAddressesFromLocalStorage(): void {
-    const stored = localStorage.getItem('userAddresses');
-    this.userAddresses = stored ? JSON.parse(stored) : [];
-    this.addressesSubject.next(this.userAddresses);
-  }
+  getAddressesByUser(): Observable< Address[] > {
+    return this.httpClient
+      .get< Address[] >( `${ this.baseUrl }`)
+      .pipe(
+        catchError(() => of([]))
+      );
+  } /* end getAddresses */
 
-  /* mt: cargar direcciones desde localStorage */
-  private saveAddressesToLocalStorage(): void {
-    localStorage.setItem('userAddresses', JSON.stringify(this.userAddresses));
-    this.addressesSubject.next(this.userAddresses);
-  }
+  getDefaultAddress( ): Observable< Address | null > {
+    return this.httpClient
+    .get< Address >( `${ this.baseUrl }/default`)
+      .pipe(
+        catchError(() => of(null))
+      );
+  } /* end getDefaultAddress */
 
-  /* fn: obtener todas las direcciones de un usuario */
-  public getAddressesByUser(idUser: number): Address[] {
-    const entry = this.userAddresses.find(entry => entry.idUser === idUser);
-    return entry ? entry.addresses: [];
-  }
+  getAddressById( id: string ): Observable< Address | null > {
+    return this.httpClient
+      .get< Address >( `${ this.baseUrl }/${ id }`)
+      .pipe(
+        catchError(() => of(null))
+      );
+  } /* end getAddressById */
 
-  /*  */
-  public getDefaultAddressByUser(idUser: number): Address | null {
-    
-    /* 🔧 busca las direcciones del usuario */
-    const entry = this.userAddresses.find(e => e.idUser === idUser);
-    
-    /* 🔧 si no hay direcciones devuelve null */
-    if (!entry || !entry.addresses.length) return null;
-    
-    /* 🔧 busca la que está marcada como default */
-    const defaultAddress = entry.addresses.find(a => a.isDefault);
-    
-    /* 🔧 si no hay default, retorna la primera */
-    return defaultAddress || entry.addresses[0];
-  }
+  createAddress(address: Omit<Address, '_id'>): Observable<Address> {
+    return this.httpClient
+      .post<Address>(`${ this.baseUrl }`, address)
+      .pipe(
+        catchError(() => of({} as Address))
+      );
+  } /* end createAddress */
 
-  
-  /* mt: agregar una direccion a un usuario */
-  public addAddressForUser(idUser: number, address: Address): void {
-    const entry = this.userAddresses.find(entry => entry.idUser === idUser);
+  updateAddress(id: string, address: Partial<Address>): Observable<Address> {
+    return this.httpClient
+      .put<Address>(`${ this.baseUrl }/${ id }`, address)
+      .pipe(
+        catchError(() => of({} as Address))
+      );
+  } /* end updateAddress */
 
-    if ( !entry || !entry.addresses.length ) {
-      ( address as any).isDefault = true;
-    }
+  setDefaultAddress(id: string): Observable<Address> {
+    return this.httpClient
+      .patch<Address>(`${ this.baseUrl }/${ id }/set-default`, {})
+      .pipe(
+        catchError(() => of({} as Address))
+      );
+  } /* end setDefaultAddress */
 
-    if ( entry ) {
-      entry.addresses.push(address);
+  deactivateAddress(id: string): Observable<Address> {
+    return this.httpClient
+      .patch<Address>(`${ this.baseUrl }/${ id }/deactivate`, {})
+      .pipe(
+        catchError(() => of({} as Address))
+      );
+  } /* end deactivateAddress */
 
-    } else {
-      this.userAddresses.push({
-        idUser: idUser,
-        addresses: [address]
-      });
-    }
+  deleteAddress(id: string): Observable<void> {
+    return this.httpClient
+      .delete<void>(`${ this.baseUrl }/${ id }`)
+      .pipe(
+        catchError(() => of(void 0))
+      );
+  } /* end deleteAddress */
 
-    this.saveAddressesToLocalStorage();    
-  }
-
-  /*  */
-  public getAddressesByCurrentUser(): Observable<Address[]> {
-    const currentUserId = this.authService.getCurrentUser()?.idUser;
-    if (!currentUserId) {
-      return of([]);
-    }
-    return this.addresses$.pipe(
-      map(userEntries => {
-        const entry = userEntries.find(e => e.idUser === currentUserId);
-        return entry ? entry.addresses : [];
-      })
-    );
-  }
-
-
-  /* mt: eliminar una direccion de un usuario por indice */
-  public deleteAddressForUser(idUser: number, index: number): void {
-    const entry = this.userAddresses.find(entry => entry.idUser === idUser);
-
-    if (entry && entry.addresses[index]) {
-      entry.addresses.splice(index, 1);
-      this.saveAddressesToLocalStorage();
-    }
-  }
-
-  /* mt: actualizar una direccion existente */
-  public updateAddressForUser(idUSer: number, index: number, updatedAddress: Address): void {
-    const entry = this.userAddresses.find(entry => entry.idUser === idUSer);
-
-    if (entry && entry.addresses[index]) {
-      entry.addresses[index] = updatedAddress;
-      this.saveAddressesToLocalStorage();
-    }
-  }
-
-}
+} /* end AddressService */

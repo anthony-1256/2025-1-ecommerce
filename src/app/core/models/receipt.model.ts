@@ -1,19 +1,18 @@
+/* receipt.model.ts */
 import { Address } from "./address.model";
-import { Payment } from "./payment.model";
+import { Payment } from "./payment-method.model";
 import { Product } from "./product.model";
 
 export interface ReceiptItem {
-
     product: Product;
     quantity: number;
     unitPrice: number;
     totalPrice: number;
-
 }
 
 export interface Receipt {
     idReceipt: string;
-    idUser: number;
+    _id: number;
     date: Date;
     items: ReceiptItem[];
     totalQuantity: number;

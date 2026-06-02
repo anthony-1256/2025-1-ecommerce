@@ -1,0 +1,15 @@
+<!-- product-list.component.html -->
+<div class="container mt-2 pt-5">
+
+    <p>Soy product-list</p>
+
+    <div id="text-center mb-4">
+        <app-button-view (viewChange)="changeView($event)"></app-button-view>
+    </div>
+
+    @if (currentView === 'cards-group') {
+        <app-cards-group [products]="products"></app-cards-group>
+    } @else if (currentView === 'cards') {
+        <app-cards [products]="products"></app-cards>
+    }
+</div>

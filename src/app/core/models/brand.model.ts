@@ -1,5 +1,6 @@
+/* brand.model.ts */
 export interface Brand {
-    idBrand: number;
+    _id: string;
     name: string;
     logo: string;
 }

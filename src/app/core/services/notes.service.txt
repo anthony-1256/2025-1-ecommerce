@@ -1,0 +1,126 @@
+/* ar: usuarios registrados */
+  private users: User[] = [];
+  /* ob: observable reactivo del listado de usuarios */
+  private usersSubject = new BehaviorSubject<User[]>([]);
+  public users$: Observable<User[]> = this.usersSubject.asObservable(); /* Exposición del observable para suscripción */
+  /* ob: usuario actualmente logueado */
+  private currentUser: User | null = null;
+
+  /*************** Funcionalidades de Usuarios ***************/
+  
+  /* fn: obtener todos los usuarios (no reactivo) */
+  getAllUsers(): User[] {
+    this.loadUsersFromLocalStorage();
+    return this.users;
+  }
+
+  /* fn: buscar usuario por email */
+  getUserByEmail(email: string): User | undefined {
+    return this.users.find(user => user.email === email);
+  }
+
+  /* fn: buscar usuario por username */
+  getUserByUsername(username: string): User | undefined {
+    return this.users.find(user => user.username === username);
+  }
+
+  /* mt: obtener el usuario actualmente logueado */
+  getCurrentUser(): User | null {
+    return this.currentUser;
+  }
+
+  /* mt: actualizar usuario existente por id */
+  updateUser(updateUser: User): void {
+    const index = this.users.findIndex(user => user._id === updateUser._id);
+    if (index !== -1) {
+      this.users[index] = { ...updateUser };
+      this.saveUsersToLocalStorage();
+      this.usersSubject.next(this.users);  // 🔄 emitir lista actualizada
+    }
+  }
+
+  /* mt: eliminar usuario por ID, con protección para el admin-master */
+  deleteUser(userId: number): void {
+    const userToDelete = this.users.find(user => user._id === userId);
+    if (userToDelete?.username === 'admin-master') {
+      console.warn('⚠️ No se puede eliminar al superadministrador.');
+      return;
+    }
+
+    this.users = this.users.filter(user => user._id !== userId);
+    this.saveUsersToLocalStorage();
+    this.usersSubject.next(this.users);  // 🔄 emitir lista actualizada
+  }
+
+  /* fn: generar un id único que no esté ya ocupado */
+  generateUniqueUserId(): number {
+  const usersFromStorage: User[] = JSON.parse(localStorage.getItem('users') || '[]');
+
+  const usedIds = new Set(usersFromStorage.map(user => user._id));
+  let candidateId = 1;
+
+  while (usedIds.has(candidateId)) {
+    candidateId++;
+  }
+
+  return candidateId;
+}
+
+  /*************** Manejo de LocalStorage ***************/
+  /* mt: carga los usuarios desde localStorage, crea admin por defecto si no existe */
+  private loadUsersFromLocalStorage(): void {
+    const usersFromStorage = localStorage.getItem('users');
+    this.users = usersFromStorage ? JSON.parse(usersFromStorage) : [];
+    
+    /* 🧽 Limpieza de duplicados del admin */
+    const adminUsers = this.users.filter(user => user.username === 'admin-master');
+    if (adminUsers.length > 1) {
+      const firstAdmin = adminUsers[0];
+      this.users = [
+        firstAdmin,
+        ...this.users.filter(user => user.username !== 'admin-master')
+      ];
+    }
+    
+    /* 🚫 Si no hay ningún admin, lo creamos */
+    const adminExists = this.users.some(user => user.username === 'admin-master');
+    if (!adminExists) {
+      const adminUser: User = {
+        _id: 1,
+        imgUser: '../../../../assets/images/logo-admin.jpg',
+        name: 'Administrador del Sistema',
+        age: 0,
+        sex: sex.other,
+        email: 'admin-master@system.com',
+        username: 'admin-master',
+        password: 'admin_1234',
+        admin: true,
+        role: Role.admin
+      };
+      
+      this.users.unshift(adminUser);
+    }
+    
+    this.saveUsersToLocalStorage();
+    this.usersSubject.next(this.users);  // 🔄 emitir lista actualizada
+  }
+
+  /* mt: guarda los usuarios en localStorage */
+  private saveUsersToLocalStorage(): void {
+    localStorage.setItem('users', JSON.stringify(this.users));
+  }
+
+  /* mt: carga el usuario logueado desde localStorage */
+  private loadCurrentUser(): void {
+    const currentUser = localStorage.getItem('currentUser');
+    this.currentUser = currentUser ? JSON.parse(currentUser) : null;
+    this.currentUserSubject.next(this.currentUser);
+  }
+
+  /* mt: guarda el usuario logueado en localStorage */
+  private saveCurrentUserToLocalStorage(): void {
+    if (this.currentUser) {
+      localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    }
+  }
+}

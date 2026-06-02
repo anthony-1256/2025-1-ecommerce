@@ -1,22 +1,21 @@
-/***** src/app/core/models/product.model.ts ****/
-import { Capacity, ProductCategory, Speed } from "../types/enums";
-
+/* product.model.ts */
+import { Capacity, Speed } from "../types/enums";
 import { Brand } from "../models/brand.model";
-
+import { Category } from "./category.model";
 
 export interface Product {
-    idProduct: number;
-    imgProduct: string;
-    productName: string;
+    _id: string;
+    imageURL: string;
+    name: string;
     brand: Brand;    
     model: string;
     description: string;
-    category: ProductCategory;    
+    category: Category;
     capacity: Capacity;
     speed: Speed;
     sku: string;
     price: number;
     quantity: number;
     available: boolean;
-    isOffer?: boolean;
+    finalPrice?: number;
 }

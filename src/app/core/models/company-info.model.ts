@@ -1,3 +1,4 @@
+/* company-info.model.ts */
 export interface CompanyInfo {
     name: string,
     address: string,

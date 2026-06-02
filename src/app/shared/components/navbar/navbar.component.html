@@ -1,0 +1,286 @@
+<!-- navbar.component.html -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">  
+  <div class="container-fluid">
+
+    <!-- Getter de Imagen de usuario -->
+    <img 
+      [src]="userImage"
+      alt="imagen de: {{ currentUser?.name  || 'invitado' }}"
+      width="50px"
+      height="auto">
+
+    <a class="navbar-brand">FullStorage</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="z-index: 1055;">
+
+        <!-- ******************************************************************************** -->
+        <!-- Siempre visible -->
+        <li class="nav-item">
+          <a class="nav-link"
+            routerLink="/ofertas"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
+            Inicio
+          </a>
+        </li>
+
+        <!-- ******************************************************************************** -->
+        <!-- Siempre visible -->
+        <li class="nav-item">
+          <a class="nav-link"
+            routerLink="/productos"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
+            Productos
+          </a>
+        </li>
+
+        <!-- ******************************************************************************** -->
+        <!-- Siempre visible -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+            Configuración
+          </a>
+          <ul class="dropdown-menu" style="z-index: 1055;">
+            <li>
+              <a class="dropdown-item" (click)="cambiarTema('light')">
+                Modo claro
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="cambiarTema('dark')">
+                Modo oscuro
+              </a>
+            </li>
+
+            <!-- borrar en un futuro cuando ya no se tenga necesidad de conservarlo -->
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/bootstrap']">
+                Estilos
+              </a>
+            </li>
+            <!-- borrado hasta aqui -->            
+          </ul>
+        </li>
+
+        <!-- ******************************************************************************** -->
+        
+        <!-- Cuenta de tipo de usuario -->        
+        <!-- role guest -->        
+        @if (!isLoggedIn) {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Ingresar
+            </a>
+            <ul class="dropdown-menu" style="z-index: 1055;">
+
+              <li class="dropdown-item"
+                routerLink="/inicioSesion"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Iniciar sesión
+              </li>
+
+              <li><hr class="dropdown-divider"></li>
+
+              <li class="dropdown-item"
+                routerLink="['registro"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                Registro
+              </li>
+            </ul>
+          </li>
+          
+          <!-- ******************************************************************************** -->
+          <!-- role user -->
+          } @if ( isLoggedIn && !isAdmin ) {
+              <li class="nav-item dropdown">
+
+                <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  {{currentUser?.name }}
+                </a>
+
+                <ul class="dropdown-menu" style="z-index: 1055;">
+                  
+                  <li class="dropdown-item"
+                    routerLink="/perfilUsuario"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }">
+                    Mi perfil
+                  </li>
+                  
+                  <li class="dropdown-item"
+                    routerLink="/carrito"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }">
+                    Mi carrito ((  ))
+                  </li>
+                  
+                  <li class="dropdown-item"
+                    routerLink="/historial de compras"
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }">
+                    Historial de compras
+                  </li>
+                  
+                  <li><hr class="dropdown-divider"></li>
+                  
+                  <li class="dropdown-item" (click)="logout()">
+                    Cerrar sesión
+                  </li>
+                </ul>
+              </li>
+            }
+          
+        <!-- ******************************************************************************** -->
+        <!-- role admin -->
+          @if ( isAdmin ) {
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Administrador {{ currentUser?.name  }}
+              </a>
+
+              <ul class="dropdown-menu" style="z-index: 1055;">
+
+                <!-- Perfil -->
+                <li class="dropdown-item"
+                  style="cursor: pointer"
+                  routerLink="/perfilAdmin"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }">
+                  Mi perfil
+                </li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                <!-- Gestión de negocio -->
+                <li class="dropdown-item"
+                  style="cursor: pointer"
+                  routerLink="/inventario"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }">
+                  Gestión de inventarios (( inventarios.length ))
+                </li>
+
+                <li class="dropdown-item"
+                  style="cursor: pointer"
+                  routerLink="/marcas"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }">
+                  Gestión de marcas (( inventarios.length ))
+                </li>
+
+                <li class="dropdown-item"
+                  style="cursor: pointer"
+                  routerLink="/precios"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }">
+                  Gestión de precios y ofertas (( ofertas.length ))
+                </li>
+
+                <li class="dropdown-item"
+                  style="cursor: pointer"
+                  routerLink="/masVendidos"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }">
+                  Mas vendidos (( usuarios.length ))
+                </li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                <!-- Gestión de usuarios -->
+                <li class="dropdown-item"
+                  style="cursor: pointer"
+                  routerLink="/usuarios"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }">
+                  Gestión de usuarios (( usuarios.length ))
+                </li>
+
+                <li><hr class="dropdown-divider"></li>
+
+                <!-- Logout -->
+                <li class="dropdown-item" style="cursor: pointer" (click)="logout()">
+                  Cerrar sesión
+                </li>
+
+              </ul>
+            </li>
+          }
+
+      </ul>
+
+      <div>
+        <app-local-storage-info></app-local-storage-info>
+      </div>
+      
+      <!-- ******************************************************************************** -->
+      <!-- Busqueda siempre visible -->
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar tipo overlay desde la derecha -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="navbarToggleExternalContent" aria-labelledby="offcanvasRightLabel" data-bs-theme="dark">
+  <div class="offcanvas-header">
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>    
+  </div>
+  <div class="offcanvas-body">
+    <!-- SidebarComponent renderiza categorías -->
+    <app-sidebar (categorySelected)="onCategorySelected($event)"></app-sidebar>
+  </div>
+</div>
+
+<!-- ******************************************************************************** -->
+
+<!-- <div>Agregar observables a categorias de sidebar, marcas mas vendidas, productos mas vendidos, revisar en cual checkout no muestra total a pagar</div> -->
+
+<!-- Boton Sidebar -->
+<!-- <button
+class="btn btn-outline-secondary"
+type="button"
+data-bs-toggle="offcanvas"
+data-bs-target="#navbarToggleExternalContent"
+aria-controls="navbarToggleExternalContent">
+  <span class="navbar-toggler-icon"></span>
+</button> -->
+
+<!-- ******************************************************************************** -->
+
+<!--
+
+| Orden | Archivo(s)                                     | Estado       |
+| ----- | ---------------------------------------------- | ------------ |
+| 1     | `navbar.component.ts` + `.html`                | 🟢 Completo  |
+| 2     | `sidebar.component.ts`                         | 🟢 Completo  |
+| 3     | `app.component.html`                           |
+🟢 Completo  |
+| 4     | `tsconfig.json`                                | 🟢 Completo  |
+| 5     | `best-sellers.component.ts`                    | 🟢 Completo  |
+| 6     | `form-addaddress.component.ts`                 | 🟢 Completo  |
+| 7     | `update-user.component.ts`                     | 🟢 Completo  |
+| 8     | `user.component.ts` + `.html`                  | 🟢 Completo  |
+| 9     | `form-login.component.ts`                      | 🔴 Pendiente |
+| 10    | `print-receipt.component.ts`                   | 🔴 Pendiente |
+
+-->
+

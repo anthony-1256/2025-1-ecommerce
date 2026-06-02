@@ -1,0 +1,264 @@
+/* ***** CICLO DE VIDA ***** */
+  ngOnInit(): void {
+    this.isLoading = true;
+
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));      
+      if (id) {
+        this.isLoading = true;        
+        setTimeout(() => {
+          const found = this.productService.getProductById(id);
+          if (found) {
+            this.product = found;
+            this.loadRecommendedProducts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            console.warn('[] Producto no encontrado para id:', id);
+          }
+          this.isLoading = false;
+        }, 500);
+      }      
+    });
+    
+    this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+      this.cartQuantity = cart.items.reduce((sum, item) => sum + (item.quantity ?? 1), 0);
+    });
+    
+    this.favoriteSubscription = this.favoritesService.favorites$.subscribe((favs: Favorite[]) => {
+      this.favoriteIds = new Set(favs.map( f => f._id ));
+      console.log('[CardsGroup] Favoritos actualizados:', Array.from(this.favoriteIds));
+      this.cd.detectChanges();
+    });
+
+    this.storageListener = (event: StorageEvent) => {
+      if (event.key === this.favoritesService.getStorageKey()) {
+        this.favoritesService.reloadFavoritesFromStorage();
+      }
+    };
+    window.addEventListener('storage', this.storageListener);
+
+    setTimeout(() => { this.isLoading = false; }, 500);
+  } /* fin ngOnInit */
+
+  /* mt: ngOnDestroy */
+  ngOnDestroy(): void {
+    this.cartSubscription?.unsubscribe();
+    this.favoritesSubscription?.unsubscribe();
+
+    if (this.storageListener) {
+      window.removeEventListener('storage', this.storageListener);
+    }
+  } /* fin ngOnDestroy */  
+  
+    /* ***** MÉTODOS DE CANTIDAD TEMPORAL ***** */
+  /* mt: increaseQuantity */
+  increaseQuantity(p: Product): void {
+    const id = p._id;
+    this.tempQuantities[id] = (this.tempQuantities[id] || 1) + 1;
+    console.log(`Cantidad temporal aumentada para ${p.name}:`, this.tempQuantities[id]);
+  } /* fin increaseQuantity */
+
+  /* mt: decreaseQuantity */
+  decreaseQuantity(p: Product): void {
+    const id = p._id;
+    if ((this.tempQuantities[id] || 1) > 1) {
+      this.tempQuantities[id]--;
+      console.log(`Cantidad temporal disminuida para ${p.name}:`, this.tempQuantities[id]);
+    }
+  } /* fin decreaseQuantity */
+
+  /* mt: getTotal */
+  getTotal(p: Product): number {
+    const tempQty = this.tempQuantities[p._id];
+    const cart = this.cartService.getCartSnapshot;
+    const item = cart.items.find((i: any) => i.product._id === p._id);
+
+    const quantity = tempQty !== undefined ? tempQty : (item ? item.quantity : 1);    
+    return quantity * p.price;
+  } /* fin getTotal */
+
+  /* mt: getQuantity */
+  getQuantity(p: Product): number {
+    const cart = this.cartService.getCartSnapshot;
+    const item = cart.items.find(i => i.product._id === p._id);
+    return item ? item.quantity : 0;
+  } /* fin getQuantity */
+  
+
+  /* ***** MÉTODOS DE CARRITO ***** */
+  /* mt: onAddToCart */
+  onAddToCart(p: Product): void {
+    const quantityToAdd = this.tempQuantities[p._id] || 1;
+
+    if (this.isInCart(p)) {
+      Swal.fire({
+        title: '¡Ya está en el carrito!',
+        text: `${p.name} ya fue agregado previamente.`,
+        icon: 'info',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
+    this.cartService.addToCart(p, quantityToAdd);
+    console.log('🛒 Producto agregado al carrito:', p.name, 'cantidad:', quantityToAdd);
+
+    // Reset cantidad temporal a 1
+    this.tempQuantities[p._id] = 1;
+
+    Swal.fire({
+      title: '¡Producto agregado!',
+      text: `${p.name} agregado al carrito (${quantityToAdd})`,
+      icon: 'success',
+      confirmButtonText: 'Aceptar'
+    });
+  } /* fin onAddToCart */
+
+  /* fn: isInCart */  
+  isInCart(p: Product): boolean {
+    const cart = this.cartService.getCartSnapshot;
+    return cart.items.some((item: {product: Product, quantity: number}) => item.product._id === p._id);
+  } /* fin isInCart */
+
+  /* mt: onBuyNow - compra relámpago con validación */
+  onBuyNow(p: Product): void {
+    const quantityToAdd = this.tempQuantities[p._id] || 1;
+
+    if (this.isInCart(p)) {
+      Swal.fire({
+        title: '¡Ya está en el carrito!',
+        text: `${p.name} ya fue agregado previamente.`,
+        icon: 'info',
+        confirmButtonText: 'Ir al carrito'
+      }).then(() => {
+        this.router.navigate(['/cart']);
+      });
+      return;
+    }
+
+    this.cartService.addToCart(p, quantityToAdd);
+
+    this.tempQuantities[p._id] = 1;
+
+    Swal.fire({
+      title: 'Compra relámpago',
+      text: `${p.name} x${quantityToAdd} agregado(s) al carrito`,
+      icon: 'success',
+      confirmButtonText: 'Finalizar compra'
+    }).then(() => {
+      this.router.navigate(['/checkout']);
+    });
+  } /* fin onBuyNow */
+
+  
+  /* ***** MÉTODOS DE FAVORITOS***** */
+  /* mt: onToggleFavorite */
+  onToggleFavorite(p: Product): void {
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      Swal.fire({
+        title: 'Debes iniciar sesión',
+        text: 'Para agregar productos a favoritos, necesitas estar logueado.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+    const fav: Favorite = {
+      _id: p._id,
+      _id: user._id,
+      name: p.name,
+      image: p.image,
+      price: p.price
+    };    
+    const alreadyFavorite = this.favoritesService.isFavorite(p._id);
+    console.log('💡 Estado actual desde servicio:', alreadyFavorite);
+    if (alreadyFavorite) {
+      console.log('Eliminado de favoritos:', p.name);
+      this.favoritesService.deleteAllFavoritesByUser(fav._id);
+      this.favoriteIds.delete(fav._id);
+      Swal.fire({
+        title: 'Producto eliminado',
+        text: `${p.name} se eliminó de tus favoritos.`,
+        icon: 'info',
+        confirmButtonText: 'Aceptar'
+      });
+    } else {
+      console.log('Agregado a favoritos:', p.name);
+      this.favoritesService.createFavoritesByUser(fav);
+      this.favoriteIds.add(fav._id);
+      Swal.fire({
+        title: 'Producto agregado',
+        text: `${p.name} se agregó a tus favoritos.`,
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
+      });
+    }
+    console.log('[CardsGroup] Estado actualizado:', this.favoritesService.isFavorite(p._id));
+  } /* fin onToggleFavorite */
+
+  /* mt: isFavorite */
+  public isFavorite(p: Product): boolean {
+    return this.favoriteIds.has(p._id);
+  } /* fin isFavorite */
+
+  /* ***** MÉTODOS DE PRUEBA ***** */
+  /* mt: consoleTest */
+  consoleTest(): void {
+    console.log('El boton si responde');
+  } /* fin consoleTest */
+  
+  
+  /* ***** MÉTODOS DE PRODUCTOS RECOMENDADOS ***** */
+  /* mt: loadRecommendedProducts */
+  private async loadRecommendedProducts(): Promise<void> {
+    if (!this.product) return;
+    const allSales = await firstValueFrom(this.salesService.sales$);
+
+    const groupedSales: Record<number, { productId: number, quantitySold: number }> = {};
+    for (const sale of allSales) {
+      const pid = sale._id;
+      if (!groupedSales[pid]) {
+        groupedSales[pid] = { productId: pid, quantitySold: sale.quantity };
+      } else {
+        groupedSales[pid].quantitySold += sale.quantity;
+      }
+    }
+
+    const topSoldProducts = Object.values(groupedSales)
+      .sort((a, b) => b.quantitySold - a.quantitySold)
+      .map(g => this.productService.getProductById(g.productId))
+      .filter((p): p is Product => !!p && p._id !== this.product._id);
+
+    const sameBrand = this.productService.getAllProducts()
+      .find(p => p.brand?.brand._id === this.product.brand?.brand._id && p._id !== this.product._id);
+
+    const sameCategory = this.productService.getAllProducts()
+      .find(p => p.category === this.product.category && p._id !== this.product._id && p !== sameBrand);
+
+    const topSold = topSoldProducts.find(p => p !== sameBrand && p !== sameCategory);
+    this.recomendedProducts = [];
+    if (sameBrand) this.recomendedProducts.push(sameBrand);
+    if (sameCategory) this.recomendedProducts.push(sameCategory);
+    if (topSold) this.recomendedProducts.push(topSold);
+    console.log('[DEBUG][CardView] recomendedProducts:', this.recomendedProducts);
+  } /* fin loadRecommendedProducts */
+    
+  /* mt: open */
+  open(product: Product): void {
+    this.product = product;
+    this.quantity = 1;
+    this.loadRecommendedProducts();
+    const modalElement = document.getElementById('cardViewModal');
+    if (modalElement) {
+      const modalInstance = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
+      modalInstance.show();
+    }
+  } /* fin open */
+
+  /* mt: goToProduct */
+  public goToProduct(_id: number): void {
+    this.isLoading = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.router.navigate(['/detalles', _id]);
+  } /* fin goToProducts */

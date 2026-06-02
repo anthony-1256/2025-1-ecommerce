@@ -32,3 +32,107 @@
         border: 1px solid #000;
     }
 } */
+
+/* ======== Tema claro ======== */
+:root[data-bs-theme="light"] {
+    --color-card-bg: #ffffff;
+    --color-card-text: #212529;
+    --color-card-border: #dee2e6;
+
+    --color-navbar-bg: #f8f9fa;
+    --color-navbar-text: #212529;
+
+    --color-oferta-bg: #fff3cd;
+    --color-oferta-text: #664d03;
+    --color-oferta-borde: #ffecb5;
+}
+
+/* ======== Tema oscuro ======== */
+:root[data-bs-theme="dark"] {
+    --color-card-bg: #1f1f1f;
+    --color-card-text: #f8f9fa;
+    --color-card-border: #2c2c2c;
+
+    --color-navbar-bg: #2b2b2b;
+    --color-navbar-text: #f8f9fa;
+
+    --color-oferta-bg: #3a2f0b;
+    --color-oferta-text: #f8f9fa;
+    --color-oferta-borde: #5c4a16;
+}
+
+/* ======== Cards globales ======== */
+.card {
+    background-color: var(--color-card-bg) !important;
+    color: var(--color-card-text) !important;
+    border-color: var(--color-card-border) !important;
+}
+
+/* ======== Navbar ======== */
+.navbar {
+    background-color: var(--color-navbar-bg) !important;
+    color: var(--color-navbar-text) !important;
+}
+
+/* ======== Productos en oferta ======== */
+.oferta {
+    background-color: var(--color-oferta-bg) !important;
+    color: var(--color-oferta-text) !important;
+    border: 1px solid var(--color-oferta-borde) !important;
+    border-radius: 8px;
+    padding: .5rem;
+}
+
+/* Navbar global */
+.navbar {
+    background-color: var(--color-navbar-bg) !important;
+    color: var(--color-navbar-text) !important;
+}
+
+/* Navbar links */
+.navbar .nav-link {
+    color: var(--color-navbar-text) !important;
+}
+
+/* Dropdown items */
+.navbar .dropdown-menu {
+    background-color: var(--color-navbar-bg) !important;
+    color: var(--color-navbar-text) !important;
+}
+
+/* Imagen de usuario */
+.navbar img {
+    border-radius: 50%;
+    max-width: 50px;
+    height: auto;
+}
+
+/* Responsive adjustments */
+
+/* Celulares pequeños */
+@media (max-width: 575.98px) {
+    .navbar .form-control {
+        width: 100%;
+        margin-bottom: .5rem;
+    }
+    .navbar .btn-outline-success {
+        width: 100%;
+    }
+}
+
+/* Tablets */
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .navbar .form-control {
+        width: auto;
+    }
+    .navbar .btn-outline-success {
+        width: auto;
+    }
+}
+
+/* Laptops y PCs */
+@media (min-width: 992px) {
+    .navbar .form-control {
+        width: 250px;
+    }
+}

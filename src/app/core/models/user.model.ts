@@ -1,17 +1,34 @@
-/***** src/app/core/models/users.model.ts *****/
-import { Gender, Role } from '../types/enums';
+/* user.model.ts */
+import { z } from 'zod';
 
 export interface User {
-
-    idUser: number;
-    imgUser: string;
+    _id: string;
+    imgUser?: string;
     name: string;
     age: number;
-    gender: Gender;    
+    sex: 'male' | 'female';
+    phone: string;
     email: string;
-    username: string;
-    password: string;
-    admin: boolean;    
+    userName: string;
     role: Role;
-
+    isActive: boolean;
 }
+
+export enum Role {
+    guest = 'guest',
+    user = 'user',
+    admin = 'admin'
+}
+
+export const userSchema = z.object({
+    _id: z.string(),
+    imgUser: z.string(),
+    name: z.string(),
+    age: z.number(),
+    sex: z.enum(['male', 'female']),
+    phone: z.string(),
+    email: z.email(),
+    userName: z.string(),
+    role: z.enum(Role),
+    isActive: z.boolean()
+});

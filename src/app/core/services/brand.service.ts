@@ -1,65 +1,132 @@
+/* brand.service.ts */
 import { Injectable } from '@angular/core';
-import { Brand } from '../models/brand.model';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
+import {
+  BehaviorSubject,
+  Observable,
+  map,
+  catchError,
+  of,
+  tap,
+  throwError
+} from 'rxjs';
+
+import { Brand } from '../../core/models/brand.model';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BrandService {
 
-  private readonly LOCAL_STORAGE_KEY = 'app_brands_v1';
-
-  private _brands: Brand[] = [];
-  private brandSubject = new BehaviorSubject<Brand[]>([]);
+  private baseUrl = `${ environment.baseUrl }/brands`;
+  
+  private brandSubject = new BehaviorSubject< Brand[] >( [] );
   public brands$ = this.brandSubject.asObservable();
 
-  constructor() {
-    this.loadBrandsFromLocalStorage();
-  }
+  constructor(
+    private httpClient: HttpClient
+  ) { }
 
-  /* Carga inicial desde localStorage */
-  private loadBrandsFromLocalStorage(): void {
-    const stored = localStorage.getItem(this.LOCAL_STORAGE_KEY);
-    if (stored) {
-      this._brands = JSON.parse(stored);
-      this.brandSubject.next([...this._brands]);
-    }
-  }
+  getBrands(): Observable< Brand[] > {
+    return this.httpClient
+    .get< Brand[] >( this.baseUrl )
+    .pipe(
+      tap(( brands ) => { /* tap: actualiza estado */
+        this.brandSubject.next( brands ?? [] );
+      }),
+      map(( brands ) => brands ?? [] ), /* map: siempre regresa un array */
+      catchError(( error ) => { /* catchError: limpia estado y evita que reviente la app */
+        console.error( `[ BrandService ] Error fetching brands: `, error );
+        this.brandSubject.next([]);
+        return of ([]); /* error especifico */
+      })
+    );
+  } /* end getBrands */
 
-  public refreshBrands(): void {
-    this.loadBrandsFromLocalStorage();
-  }
+  getBrandById( id: string ): Observable< Brand > {
+    return this.httpClient
+      .get< Brand >(`${ this.baseUrl }/${ id }` )
+      .pipe(
+        catchError(( error ) => {
+          console.error( '[ BrandService ] Error en getBrandById: ', error );
+          return throwError(() => error ); /* yo especifico error */
+        })
+      );
+  } /* end getBrandById */
 
-  /* Persiste cambios en localStorage y notifica a suscriptores */
-  private persistBrands(): void {
-    localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(this._brands));
-    this.brandSubject.next([...this._brands]);
-  }
+  createBrand( brand: Omit< Brand, '_id' >): Observable< Brand > {
 
-  /* Crear una nueva marca */
-  addBrand(brand: Omit<Brand, 'idBrand'>): void {
-    const newId = this._brands.length ? Math.max(...this._brands.map(b => b.idBrand)) + 1 : 1;
-    this._brands.push({ ...brand, idBrand: newId });
-    this.persistBrands();
-  }
+    return this.httpClient
+      .post< Brand >( `${ this.baseUrl }`, brand )
+      .pipe(
+        tap(( newBrand ) => {
+          const current = this.brandSubject.value ?? [];
+          this.brandSubject.next([ ...current, newBrand ]);
+        }),
+        catchError(( error ) => {
+          console.error( '[ BrandService ] Error en createBrand: ', error);
+          return throwError(() => error );
+        })
+      );
+      
+  } /* end createBrand */
 
-  /* Actualizar marcas */
-  updateBrand(updated: Brand): void {
-    const index = this._brands.findIndex(b => b.idBrand === updated.idBrand);
-    if (index !== -1) {
-      this._brands[index] = updated;
-      this.persistBrands();
-    }
-  }
+  updateBrand( brand: Brand ): Observable< Brand > {
+    return this.httpClient
+      .put< Brand >( `${ this.baseUrl }/${ brand._id }`, brand )
+      .pipe(
+        tap(( updatedBrand ) => {
+          const updated = ( this.brandSubject.value ?? [] ).map( b =>
+            b._id === updatedBrand._id ? updatedBrand : b
+          );
+          this.brandSubject.next( updated );          
+        }),
+        catchError(( error ) => {
+          console.error( '[ BrandService ] Error en updateBrand: ', error );
+          return throwError(() => error );
+        })
+      );
+  } /* end updateBrand */
 
-  /* Eliminar marcas */
-  deleteBrand(idBrand: number): void {
-    this._brands = this._brands.filter(b => b.idBrand !== idBrand);
-    this.persistBrands();
-  }
+  deleteBrand( id: string ): Observable< void > {
+    return this.httpClient
+    .delete< void >( `${ this.baseUrl }/${ id }` )
+    .pipe(
+      tap(() => {
+        const filtered = ( this.brandSubject.value ?? [] )
+          .filter( b => b._id !== id );
 
-  /* Obtener marca por id */
-  getBrandById(idBrand: number): Brand | undefined {
-    return this._brands.find(b => b.idBrand === idBrand);
-  }
-}
+        this.brandSubject.next( filtered );
+      }),
+      catchError(( error ) => {
+        console.error('[BrandService] Error en deleteBrand:', error);
+        return throwError(() => error);
+      })
+    );
+  } /* end deleteBrand */
+
+  searchBrands( params: {
+    q?: string;
+    sort?: string;
+    order: 'string';
+    limit?: number;
+    page?: number;
+  }): Observable<{ brands: Brand[]; pagination: any; filters: any }> {
+
+    return this.httpClient
+      .get<{ brands: Brand[]; pagination: any; filters: any }>(
+        `${ this.baseUrl }/search`,
+        { params: params as any }
+      )
+      .pipe(
+        map(( response ) => response ),
+        catchError(( error ) => {
+          console.error( '[ BrandService ] Error en searchBrands', error );
+          return throwError(() => error );
+        })
+      );
+  } /* end searchBrands */
+  
+} /* end BrandService */

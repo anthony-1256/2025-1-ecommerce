@@ -1,0 +1,185 @@
+<!-- card-view.component.html -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+
+            <div *ngIf="isLoading" class="text-center my-5">
+                <i class="fa-solid fa-spinner fa-spin fa-3x text-primary"></i>
+                <p class="mt-2">Cargando producto...</p>
+            </div>
+
+            <div *ngIf="!isLoading">
+
+                <div
+                    class="p-3 rounded"
+                    style="margin: 15px 0; background-color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.25);">
+
+                    <div class="mb-3">
+                        <h2>{{ product.name }}</h2>
+
+                        <div class="d-flex gap-2 mt-2 flex-wrap">
+                            <button class="btn btn-secondary" routerLink="/productos">
+                                Regresar
+                            </button>
+
+                            <button class="btn btn-info" routerLink="/carrito">
+                                Carrito
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-5 d-flex justify-content-center align-items-center position-relative">
+
+                            <img
+                                [src]="product.imageURL"
+                                [alt]="product.name"
+                                class="img-fluid rounded"
+                                style="
+                                    max-height: 400px;
+                                    object-fit: contain;
+                                    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+                                    margin: 10px;
+                                ">
+                        </div>
+
+                        <div class="col-md-7">
+
+                            <p class="mb-2">
+                                <strong>Marca:</strong>
+                                {{ product.brand.name }}
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Modelo:</strong>
+                                {{ product.model }}
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Categoria:</strong>
+                                {{ product.category.name }}
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Capacidad:</strong>
+                                {{ product.capacity }}
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Velocidad:</strong>
+                                {{ product.speed }}
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Descripción:</strong>
+                                {{ product.description }}
+                            </p>
+
+                            <div class="mt-3">
+
+                                <p
+                                    class="card-text fw-bold mb-0"
+                                    style="font-size: 16px; line-height: 1.1;">
+
+                                    A tan solo:
+
+                                    <small
+                                        class="fw-bold text-success"
+                                        style="font-size: 18px;">
+
+                                        {{ product.price | currency:'MXN' }}
+
+                                    </small>
+                                </p>
+
+                                <p
+                                    class="card-text text-end mb-0 mt-0"
+                                    style="font-size: 28px; line-height: 1.1;">
+
+                                    <small class="text-muted">
+
+                                        Total:
+                                        {{ product.price * quantity | currency:'MXN' }}
+
+                                    </small>
+                                </p>
+
+                                <div class="d-flex justify-content-around mt-2 gap-2">
+
+                                    <button
+                                        class="btn btn-warning d-flex align-items-center justify-content-center py-1"
+                                        (click)="onBuyNow(product)"
+                                        style="font-weight: 600; font-size: 12px; width: 150px;">
+
+                                        ⚡ Compralo ahora
+
+                                    </button>
+
+                                    <button
+                                        class="btn btn-success d-flex align-items-center justify-content-center py-1"
+                                        (click)="onAddToCart(product)"
+                                        title="Agregar al carrito"
+                                        style="font-weight: 600; font-size: 12px; width: 150px;">
+
+                                        🛒 Agregalo a tu carrito
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-5">
+
+                    <h5>Productos recomendados</h5>
+
+                    <div class="d-flex gap-3 flex-wrap">
+
+                        <div
+                            class="card text-center position-relative"
+                            style="
+                                width: 12rem;
+                                cursor: pointer;
+                                margin: 10px;
+                                box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+                                border-radius: 10px;
+                            "
+                            *ngFor="let rec of recomendedProducts"
+                            (click)="goToProduct(rec._id)">
+
+                            <img
+                                [src]="rec.imageURL"
+                                class="card-img-top rounded"
+                                [alt]="rec.name"
+                                style="height: 120px; object-fit: contain; margin: 5px;">
+
+                            <div class="card-body p-2">
+
+                                <p class="card-text mb-1">
+                                    {{ rec.name }}
+                                </p>
+
+                                <small class="text-muted">
+                                    {{ rec.brand.name }}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

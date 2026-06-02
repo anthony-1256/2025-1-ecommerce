@@ -1,202 +1,156 @@
-/***** src/app/core/services/auth.service.ts *****/
+/* auth.service.ts */
 import { Injectable } from '@angular/core';
-import { User } from '../models/user.model';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Gender, Role } from '../types/enums';
+import { Role } from '../../core/models/user.model';
+import { BehaviorSubject, catchError, map, Observable, throwError,  } from 'rxjs';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment.development';
+
+type DecodedToken = {
+  _id: string;
+  name: string;
+  role: Role;
+  exp?: number;
+};
+
+export type AuthenticatedUser = {
+  _id: string;
+  name: string;
+  role: Role;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  /* ar: usuarios registrados */
-  private users: User[] = [];
-
-  /* ob: observable reactivo del listado de usuarios */
-  private usersSubject = new BehaviorSubject<User[]>([]);
-  public users$: Observable<User[]> = this.usersSubject.asObservable(); /* Exposición del observable para suscripción */
-
-  /* ob: usuario actualmente logueado */
-  private currentUser: User | null = null;
-
-  /* ob: observable reactivo del usuario actual */
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
-
-
-  constructor( private router: Router ) {
-    this.loadUsersFromLocalStorage();   /* mt: carga inicial de usuarios desde localStorage */
-    this.loadCurrentUser();             /* mt: carga usuario logueado si existe */
-  }
+  /* private baseUrl = 'http://localhost:3000/api/auth'; */ /* harcodear */
+  private baseUrl = `${ environment.baseUrl }/auth`;
+  private currentUserSubject = new BehaviorSubject<AuthenticatedUser | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
   
+  constructor(
+    private httpClient: HttpClient, private router: Router
+  ) {}
 
-  /*************** Registro de Usuario ***************/
+  private saveTokens( token: string,refreshToken: string ): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+  } /* end saveTokens */
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  } /* end getToken */
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  } /* end getRefreshToken */
   
-  /* fn: registrar un nuevo usuario */
-  register(user: User): void {
-    this.loadUsersFromLocalStorage();   /* asegura la última versión del array */
+  refreshAccessToken(): Observable<void> {
+    const refreshToken = this.getRefreshToken();
 
-    /* fn: agregar nuevo Id único */
-    const usedIds = this.users.map(u => u.idUser).sort((a, b) => a - b);
-    let newId = 1;
-    for (let i = 0; i <usedIds.length; i++) {
-      if (usedIds[i] !== newId) break;
-      newId++;    
-    }
-    user.idUser = newId;
-
-    this.users.push(user);              /* agrega nuevo usuario */
-    this.saveUsersToLocalStorage();     /* guarda en localStorage */
-    this.usersSubject.next(this.users); /* 🔄 emite nueva lista reactiva */    
-  }
-
-  /*************** Funcionalidades para Login ***************/
-  
-  /* fn: iniciar sesión con correo o username indistintamente */
-  login(emailOrUsername: string, password: string): User | null {
-    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
-
-    const userFound = storedUsers.find((user: any) => {
-      return (
-        (user.email === emailOrUsername || user.username === emailOrUsername) &&
-        user.password === password
-      );
-    });
-
-    if (userFound) {
-      this.currentUser = userFound;
-      this.saveCurrentUserToLocalStorage();
-      this.currentUserSubject.next(this.currentUser);
-      return userFound;
+    if ( !refreshToken ) {
+      return throwError(() => new Error( 'No refresh token available' ));
     }
 
-    return null;
-  }
+    return this.httpClient.post<{ token: string }>(
+      `${this.baseUrl}/refresh-token`,
+      { token: refreshToken }
+    ).pipe(
+      map(( data ) => {
 
-  /* fn: cerrar sesión y limpiar localStorage */
-  logout(): void {    
-    this.currentUser = null;
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/inicioSesion']);
-  }
+        localStorage.setItem( 'token', data.token );
 
-  /*************** Funcionalidades de Usuarios ***************/
+        this.setCurrentUserFromToken( data.token );
+      })
+    )
+  } /* end refreshAccessToken */
   
-  /* fn: obtener todos los usuarios (no reactivo) */
-  getAllUsers(): User[] {
-    this.loadUsersFromLocalStorage();
-    return this.users;
-  }
-
-  /* fn: buscar usuario por email */
-  getUserByEmail(email: string): User | undefined {
-    return this.users.find(user => user.email === email);
-  }
-
-  /* fn: buscar usuario por username */
-  getUserByUsername(username: string): User | undefined {
-    return this.users.find(user => user.username === username);
-  }
-
-  /* mt: obtener el usuario actualmente logueado */
-  getCurrentUser(): User | null {
-    return this.currentUser;
-  }
-
-  /* mt: actualizar usuario existente por id */
-  updateUser(updateUser: User): void {
-    const index = this.users.findIndex(user => user.idUser === updateUser.idUser);
-    if (index !== -1) {
-      this.users[index] = { ...updateUser };
-      this.saveUsersToLocalStorage();
-      this.usersSubject.next(this.users);  // 🔄 emitir lista actualizada
-    }
-  }
-
-  /* mt: eliminar usuario por ID, con protección para el admin-master */
-  deleteUser(userId: number): void {
-    const userToDelete = this.users.find(user => user.idUser === userId);
-    if (userToDelete?.username === 'admin-master') {
-      console.warn('⚠️ No se puede eliminar al superadministrador.');
-      return;
-    }
-
-    this.users = this.users.filter(user => user.idUser !== userId);
-    this.saveUsersToLocalStorage();
-    this.usersSubject.next(this.users);  // 🔄 emitir lista actualizada
-  }
-
-  /* fn: generar un id único que no esté ya ocupado */
-  generateUniqueUserId(): number {
-  const usersFromStorage: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-
-  const usedIds = new Set(usersFromStorage.map(user => user.idUser));
-  let candidateId = 1;
-
-  while (usedIds.has(candidateId)) {
-    candidateId++;
-  }
-
-  return candidateId;
-}
-
-  /*************** Manejo de LocalStorage ***************/
-  /* mt: carga los usuarios desde localStorage, crea admin por defecto si no existe */
-  private loadUsersFromLocalStorage(): void {
-    const usersFromStorage = localStorage.getItem('users');
-    this.users = usersFromStorage ? JSON.parse(usersFromStorage) : [];
+  private removeTokens(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+  } /* end removeTokens */
+  
+  private setCurrentUserFromToken( token: string ): void {
+    const decoded = jwtDecode<DecodedToken>( token );
     
-    /* 🧽 Limpieza de duplicados del admin */
-    const adminUsers = this.users.filter(user => user.username === 'admin-master');
-    if (adminUsers.length > 1) {
-      const firstAdmin = adminUsers[0];
-      this.users = [
-        firstAdmin,
-        ...this.users.filter(user => user.username !== 'admin-master')
-      ];
-    }
+    const user: AuthenticatedUser = {
+      _id: decoded._id,
+      name: decoded.name,
+      role: decoded.role,      
+    };
     
-    /* 🚫 Si no hay ningún admin, lo creamos */
-    const adminExists = this.users.some(user => user.username === 'admin-master');
-    if (!adminExists) {
-      const adminUser: User = {
-        idUser: 1,
-        imgUser: '../../../../assets/images/logo-admin.jpg',
-        name: 'Administrador del Sistema',
-        age: 0,
-        gender: Gender.other,
-        email: 'admin-master@system.com',
-        username: 'admin-master',
-        password: 'admin_1234',
-        admin: true,
-        role: Role.admin
-      };
-      
-      this.users.unshift(adminUser);
-    }
+    this.currentUserSubject.next( user );
+  }/* end setCurrentUserFromToken */
+  
+  register( user: {
+    name: string;
+    email: string,
+    password: string;
+    phone: string;
+    userName: string;
+    age: number;
+    sex: string;
+    imgUser?: string;
+  } ): Observable< void > { 
     
-    this.saveUsersToLocalStorage();
-    this.usersSubject.next(this.users);  // 🔄 emitir lista actualizada
+    return this.httpClient.post<void>(
+      `${ this.baseUrl }/register`,
+      user
+    );
+  } /* end register */
+
+  login( email: string, password: string ): Observable<void> {
+    return this.httpClient.post<{ token: string, refreshToken: string }>(
+      `${ this.baseUrl }/login`,
+      { email, password }
+    ).pipe(
+      map(( data ) => {
+
+        this.saveTokens( data.token, data.refreshToken );
+
+        this.setCurrentUserFromToken( data.token );
+
+      })
+    );
+  } /* end login */
+
+  getCurrentUser(): AuthenticatedUser | null {
+    return this.currentUserSubject.value;
   }
 
-  /* mt: guarda los usuarios en localStorage */
-  private saveUsersToLocalStorage(): void {
-    localStorage.setItem('users', JSON.stringify(this.users));
-  }
+  initSession(): void { /* <-- ajuste pc#0003 */
+    const token = this.getToken();
 
-  /* mt: carga el usuario logueado desde localStorage */
-  private loadCurrentUser(): void {
-    const currentUser = localStorage.getItem('currentUser');
-    this.currentUser = currentUser ? JSON.parse(currentUser) : null;
-    this.currentUserSubject.next(this.currentUser);
-  }
+    if ( !token ) return;
 
-  /* mt: guarda el usuario logueado en localStorage */
-  private saveCurrentUserToLocalStorage(): void {
-    if (this.currentUser) {
-      localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    try {
+      const decoded = jwtDecode<DecodedToken>( token );
+      const now = Math.floor( Date.now() / 1000 );
+
+      if ( decoded.exp && decoded.exp < now ) {
+        /* token expirado — intenta refresh */
+        this.refreshAccessToken().pipe(
+          catchError(() => {
+            this.removeTokens();
+            return throwError(() => new Error('Sesión expirada'));
+          })
+        ).subscribe();
+        return;
+      }
+
+      this.setCurrentUserFromToken( token );
+
+    } catch {
+      this.removeTokens();
     }
-  }
-}
+  } /* end initSession */  
+  
+  logout(): void{
+    this.removeTokens();
+    this.currentUserSubject.next( null );
+    this.router.navigate([ '/inicioSesion' ]);
+  } /* end logout */
+
+} /* end AuthService */
